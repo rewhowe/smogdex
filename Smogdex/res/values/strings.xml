@@ -4,5 +4,8 @@
     <string name="app_name">Smogdex</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    
+    <!-- POKEMON LIST -->
+    <string name="p109">Koffing</string>
 
 </resources>

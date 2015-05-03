@@ -1,9 +1,13 @@
 package com.example.smogdex;
 
+import java.util.Map;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 
 public class MainActivity extends Activity {
@@ -12,6 +16,18 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+    
+    @Override
+    protected void onStart() {
+    	super.onStart();
+    	ImageView img = (ImageView) findViewById(R.id.temp_image);
+    	TextView txt = (TextView) findViewById(R.id.temp_text);
+    	
+    	for (Map.Entry<Integer, Integer> entry : PokemonConstants.POKEMON_LIST.entrySet()) {
+    		img.setImageResource(entry.getKey());
+    		txt.setText(getText(entry.getValue()));
+    	}
     }
 
 
