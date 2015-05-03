@@ -12,10 +12,10 @@
 bin/
 gen/
 
-# Gradle files
-.gradle/
-build/
-/*/build/
+# Eclipse Files
+.metadata
+.classpath
+.settings/
 
 # Local configuration file (sdk path, etc)
 local.properties
