@@ -16,6 +16,7 @@ gen/
 .metadata
 .classpath
 .settings/
+.project
 
 # Local configuration file (sdk path, etc)
 local.properties
