@@ -732,7 +732,7 @@
     <string name="p032a">nidoran-m</string>
     <string name="p083a">farfetchd</string>
     <string name="p122a">mr_mime</string>
-    <string name="p233a">porygon2</string>
-    <string name="p250a">ho-oh</string>
     <string name="p439a">mime_jr</string>
+    <string name="p678a1">meowstic-m</string>
+    <string name="p678a2">meowstic-f</string>
 </resources>

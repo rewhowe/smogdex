@@ -22,7 +22,8 @@ public class MainActivity extends Activity {
 		ImageView img = (ImageView) findViewById(R.id.temp_image);
 		TextView txt = (TextView) findViewById(R.id.temp_text);
 		img.setImageResource(R.drawable.p109);
-		txt.setText(getText(R.string.p109));
+		txt.setText(R.string.p109);
+
 	}
 
 
