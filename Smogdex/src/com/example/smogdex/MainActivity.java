@@ -4,8 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ListView;
 
 
 public class MainActivity extends Activity {
@@ -14,16 +13,19 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		PokemonListAdapter plAdapter = new PokemonListAdapter(this.getApplicationContext(), 0);
+		ListView plv = (ListView) findViewById(R.id.pokemon_list);
+		plv.setAdapter(plAdapter);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		ImageView img = (ImageView) findViewById(R.id.temp_image);
-		TextView txt = (TextView) findViewById(R.id.temp_text);
-		img.setImageResource(R.drawable.p109);
-		txt.setText(R.string.p109);
-
+		//		ImageView img = (ImageView) findViewById(R.id.temp_image);
+		//		TextView txt = (TextView) findViewById(R.id.temp_text);
+		//		img.setImageResource(R.drawable.p109);
+		//		txt.setText(R.string.p109);
 	}
 
 

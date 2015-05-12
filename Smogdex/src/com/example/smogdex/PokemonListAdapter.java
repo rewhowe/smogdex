@@ -3,8 +3,17 @@ package com.example.smogdex;
 import java.util.Locale;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-public class PokemonList {
+public class PokemonListAdapter extends ArrayAdapter {
+
+	private static final String TAG = PokemonListAdapter.class.getSimpleName();
 
 	private class PokemonItem {
 		public int number;
@@ -28,7 +37,10 @@ public class PokemonList {
 		}
 	}
 
+
 	private PokemonItem[] POKEMON_ITEMS;
+
+	Context context;
 
 	private void initializePokemonItems(Context context) {
 		POKEMON_ITEMS = new PokemonItem[] {
@@ -754,7 +766,30 @@ public class PokemonList {
 				new PokemonItem(720, R.drawable.p720_0, context.getString(R.string.p720), null) };
 	}
 
-	public PokemonList(Context context) {
+	public PokemonListAdapter(Context context, int resource) {
+		super(context, resource);
+		this.context = context;
 		initializePokemonItems(context);
+
+		Log.d(TAG, "rawr");
 	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		if (convertView == null) {
+			convertView = LayoutInflater.from(context).inflate(R.layout.pokemon_list_item, null);
+		}
+		PokemonItem item = POKEMON_ITEMS[position];
+
+		((ImageView) convertView.findViewById(R.id.icon)).setImageResource(item.image);
+		((TextView) convertView.findViewById(R.id.name)).setText(item.name);
+		((TextView) convertView.findViewById(R.id.number)).setText(Integer.toString(item.number));
+		return convertView;
+	}
+
+	@Override
+	public int getCount() {
+		return POKEMON_ITEMS.length;
+	}
+
 }
