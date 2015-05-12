@@ -754,4 +754,7 @@ public class PokemonList {
 				new PokemonItem(720, R.drawable.p720_0, context.getString(R.string.p720), null) };
 	}
 
+	public PokemonList(Context context) {
+		initializePokemonItems(context);
+	}
 }
