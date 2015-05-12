@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.ListView;
 
 
@@ -14,20 +15,13 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		// hide keyboard
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
 		PokemonListAdapter plAdapter = new PokemonListAdapter(this.getApplicationContext(), 0);
 		ListView plv = (ListView) findViewById(R.id.pokemon_list);
 		plv.setAdapter(plAdapter);
 	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		//		ImageView img = (ImageView) findViewById(R.id.temp_image);
-		//		TextView txt = (TextView) findViewById(R.id.temp_text);
-		//		img.setImageResource(R.drawable.p109);
-		//		txt.setText(R.string.p109);
-	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

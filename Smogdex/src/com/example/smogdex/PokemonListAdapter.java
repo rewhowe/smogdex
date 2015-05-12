@@ -6,12 +6,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,10 +18,10 @@ public class PokemonListAdapter extends ArrayAdapter {
 	private static final String TAG = PokemonListAdapter.class.getSimpleName();
 
 	private class PokemonItem {
-		public int number;
 		public int image;
 		public String name;
 		private String alias;
+		public int number;
 
 		public PokemonItem(int number, int image, String name, String alias) {
 			this.number = number;
@@ -41,10 +39,10 @@ public class PokemonListAdapter extends ArrayAdapter {
 		}
 	}
 
+	private Context context;
 
 	private PokemonItem[] POKEMON_ITEMS;
-
-	Context context;
+	private Options icon_decode_options;
 
 	private void initializePokemonItems(Context context) {
 		POKEMON_ITEMS = new PokemonItem[] {
@@ -775,7 +773,10 @@ public class PokemonListAdapter extends ArrayAdapter {
 		this.context = context;
 		initializePokemonItems(context);
 
-		Log.d(TAG, "rawr");
+		icon_decode_options = new BitmapFactory.Options();
+		icon_decode_options.inScaled = false;
+		icon_decode_options.inDither = false;
+		icon_decode_options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 	}
 
 	@Override
@@ -785,21 +786,13 @@ public class PokemonListAdapter extends ArrayAdapter {
 		}
 		PokemonItem item = POKEMON_ITEMS[position];
 
-		Options options = new BitmapFactory.Options();
-		options.inScaled = false;
-		options.inDither = false;
-		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-		ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
-		Bitmap bm = BitmapFactory.decodeResource(context.getResources(), item.image, options);
-		Bitmap bitmap = Bitmap.createScaledBitmap(bm, bm.getWidth() * 2, bm.getHeight() * 2, false);
-		imageView.setImageBitmap(bitmap);
-		LayoutParams params = (LayoutParams) imageView.getLayoutParams();
-		params.width = bitmap.getWidth();
-		params.height = bitmap.getHeight();
-		imageView.setLayoutParams(params);
+		// expensive, but not so bad in usage
+		Bitmap bm = BitmapFactory.decodeResource(context.getResources(), item.image, icon_decode_options);
+		Bitmap sbm = Bitmap.createScaledBitmap(bm, bm.getWidth() * 2, bm.getHeight() * 2, false);
 
+		((ImageView) convertView.findViewById(R.id.icon)).setImageBitmap(sbm);
 		((TextView) convertView.findViewById(R.id.name)).setText(item.name);
-		((TextView) convertView.findViewById(R.id.number)).setText("#" + Integer.toString(item.number));
+		((TextView) convertView.findViewById(R.id.number)).setText("#" + String.format("%03d", item.number));
 		return convertView;
 	}
 
