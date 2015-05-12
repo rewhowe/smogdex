@@ -781,9 +781,9 @@ public class PokemonListAdapter extends ArrayAdapter {
 		}
 		PokemonItem item = POKEMON_ITEMS[position];
 
-		((ImageView) convertView.findViewById(R.id.icon)).setImageResource(item.image);
+		ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
 		((TextView) convertView.findViewById(R.id.name)).setText(item.name);
-		((TextView) convertView.findViewById(R.id.number)).setText(Integer.toString(item.number));
+		((TextView) convertView.findViewById(R.id.number)).setText("#" + Integer.toString(item.number));
 		return convertView;
 	}
 
