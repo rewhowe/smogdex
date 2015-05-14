@@ -3,6 +3,7 @@ package com.example.smogdex.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -12,6 +13,8 @@ import com.example.smogdex.PokemonListItem;
 import com.example.smogdex.R;
 
 public class PokemonListItemView extends FrameLayout {
+
+	private static final String TAG = PokemonListItemView.class.getSimpleName();
 
 	private ImageView mImage;
 	private TextView mName;
@@ -34,6 +37,10 @@ public class PokemonListItemView extends FrameLayout {
 
 	private void inflate(Context context) {
 		((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.pokemon_list_item, this, true);
+		Log.d(TAG, "inflate");
+
+		// this is not called if inflated manually
+		onFinishInflate();
 	}
 
 	@Override
@@ -42,6 +49,8 @@ public class PokemonListItemView extends FrameLayout {
 		mImage = (ImageView) findViewById(R.id.icon);
 		mName = (TextView) findViewById(R.id.name);
 		mNumber = (TextView) findViewById(R.id.number);
+
+		Log.d(TAG, "onFinishInflate");
 	}
 
 	public void setupForItem(PokemonListItem item, Bitmap image) {
