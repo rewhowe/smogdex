@@ -22,4 +22,9 @@ public class PokemonListItem {
 			return alias;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

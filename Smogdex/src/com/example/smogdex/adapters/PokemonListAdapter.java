@@ -1,13 +1,19 @@
 package com.example.smogdex.adapters;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import com.example.smogdex.FuzzySearcher;
 import com.example.smogdex.PokemonListItem;
 import com.example.smogdex.R;
 import com.example.smogdex.views.PokemonListItemView;
@@ -18,6 +24,7 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 
 	private Context mContext;
 	private PokemonListItem[] POKEMON_ITEMS;
+	private ArrayList<PokemonListItem> mDisplayList;
 	private Options mIconDecodeOptions;
 
 	private void initializePokemonItems(Context context) {
@@ -748,11 +755,25 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 		super(context, resource);
 		mContext = context;
 		initializePokemonItems(context);
+		mDisplayList = new ArrayList<PokemonListItem>();
+		mDisplayList.addAll(Arrays.asList(POKEMON_ITEMS));
 
 		mIconDecodeOptions = new BitmapFactory.Options();
 		mIconDecodeOptions.inScaled = false;
 		mIconDecodeOptions.inDither = false;
 		mIconDecodeOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
+	}
+
+	public void updateDisplayList(String query, Locale locale) {
+		mDisplayList.clear();
+		if (query.isEmpty()) {
+			mDisplayList.addAll(Arrays.asList(POKEMON_ITEMS));
+		} else {
+			Log.d(TAG, "searching for " + query);
+//			FuzzySearcher.quickSearch(query, POKEMON_ITEMS, mDisplayList);
+			FuzzySearcher.sortedSearch(query, POKEMON_ITEMS, mDisplayList, locale);
+		}
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -763,7 +784,7 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 		} else {
 			view = new PokemonListItemView(mContext);
 		}
-		PokemonListItem item = POKEMON_ITEMS[position];
+		PokemonListItem item = mDisplayList.get(position);
 
 		// expensive, but not so bad in usage
 		Bitmap image = BitmapFactory.decodeResource(mContext.getResources(), item.image, mIconDecodeOptions);
@@ -774,7 +795,7 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 
 	@Override
 	public int getCount() {
-		return POKEMON_ITEMS.length;
+		return mDisplayList.size();
 	}
 
 }

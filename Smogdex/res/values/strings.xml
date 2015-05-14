@@ -735,4 +735,5 @@
     <string name="p439a">mime_jr</string>
     <string name="p678a1">meowstic-m</string>
     <string name="p678a2">meowstic-f</string>
+    <string name="search_hint">Fuzzy Search a Pokemon by name</string>
 </resources>
