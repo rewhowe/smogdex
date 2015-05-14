@@ -1,4 +1,10 @@
-package com.example.smogdex;
+package com.example.smogdex.activities;
+
+import com.example.smogdex.R;
+import com.example.smogdex.R.id;
+import com.example.smogdex.R.layout;
+import com.example.smogdex.R.menu;
+import com.example.smogdex.adapters.PokemonListAdapter;
 
 import android.app.Activity;
 import android.os.Bundle;

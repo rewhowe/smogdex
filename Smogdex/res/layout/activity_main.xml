@@ -7,13 +7,13 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.smogdex.MainActivity" >
+    tools:context="com.example.smogdex.activities.MainActivity" >
 
     <EditText
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search a pokemon" />
+        android:hint="Fuzzy Search a Pokemon by name" />
     
     <ListView
         android:id="@+id/pokemon_list"
