@@ -8,6 +8,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -23,6 +25,8 @@ public class MainActivity extends Activity implements TextWatcher {
 	private PokemonListAdapter mPokemonListAdapter;
 	private Locale mCurrentLocale;
 
+	private EditText mSearchBar;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,7 +34,14 @@ public class MainActivity extends Activity implements TextWatcher {
 
 		// hide keyboard
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		((EditText) findViewById(R.id.search_bar)).addTextChangedListener(this);
+		mSearchBar = (EditText) findViewById(R.id.search_bar);
+		mSearchBar.addTextChangedListener(this);
+		findViewById(R.id.search_clear).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mSearchBar.setText("");
+			}
+		});
 
 		mPokemonListAdapter = new PokemonListAdapter(this.getApplicationContext(), 0);
 		ListView plv = (ListView) findViewById(R.id.pokemon_list);
