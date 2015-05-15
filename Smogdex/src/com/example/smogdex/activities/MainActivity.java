@@ -1,7 +1,5 @@
 package com.example.smogdex.activities;
 
-import java.util.Locale;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,8 +21,6 @@ public class MainActivity extends Activity implements TextWatcher {
 	private static final String TAG = MainActivity.class.getSimpleName();
 
 	private PokemonListAdapter mPokemonListAdapter;
-	private Locale mCurrentLocale;
-
 	private EditText mSearchBar;
 
 	@Override
@@ -46,14 +42,6 @@ public class MainActivity extends Activity implements TextWatcher {
 		mPokemonListAdapter = new PokemonListAdapter(this.getApplicationContext(), 0);
 		ListView plv = (ListView) findViewById(R.id.pokemon_list);
 		plv.setAdapter(mPokemonListAdapter);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		// locale is set onResume because MAYBE the user changes it while the app is open
-		mCurrentLocale = getResources().getConfiguration().locale;
 	}
 
 	@Override
@@ -81,7 +69,7 @@ public class MainActivity extends Activity implements TextWatcher {
 
 	@Override
 	public void afterTextChanged(Editable arg0) {
-		mPokemonListAdapter.updateDisplayList(arg0.toString(), mCurrentLocale);
+		mPokemonListAdapter.updateDisplayList(arg0.toString());
 	}
 
 }

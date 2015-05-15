@@ -21,7 +21,7 @@ public class FuzzySearcher {
 		}
 	}
 
-	private static FirstElemComparator PAIR_COMPARATOR = new FirstElemComparator();
+	private static final FirstElemComparator PAIR_COMPARATOR = new FirstElemComparator();
 
 	/**
 	 * Quickly fuzzy searches an array of Objects using a given query. Results are left in-order.
@@ -45,14 +45,14 @@ public class FuzzySearcher {
 	 * @param sortedResult - Search results will be APPENDED to this List. The type MUST match the type of 'items' (not checked).
 	 * @param locale - Used to convert Strings to lower case for string-matching.
 	 */
-	public static void sortedSearch(String query, Object items[], List sortedResult, Locale locale) {
+	public static void sortedSearch(String query, Object items[], List sortedResult) {
 		List<Pair<Integer, Object>> result = new ArrayList<Pair<Integer, Object>>();
 
 		// subList(1, length+1) is used because splitting on "" returns leading and trailing ""
-		List<String> splitQuery = Arrays.asList(query.toLowerCase(locale).split("")).subList(1, query.length() + 1);
+		List<String> splitQuery = Arrays.asList(query.toLowerCase(Locale.ENGLISH).split("")).subList(1, query.length() + 1);
 
 		for (Object item : items) {
-			String s = item.toString().toLowerCase(locale);
+			String s = item.toString().toLowerCase(Locale.ENGLISH);
 			Integer score = -1;
 			int i = 0;
 			int j;
