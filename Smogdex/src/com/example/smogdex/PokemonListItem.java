@@ -3,10 +3,10 @@ package com.example.smogdex;
 import java.util.Locale;
 
 public class PokemonListItem {
-	public int mImage;
-	public String mName;
+	public final int mImage;
+	public final String mName;
 	private String mAlias;
-	public int mNumber;
+	public final int mNumber;
 
 	public PokemonListItem(int number, int image, String name, String alias) {
 		mNumber = number;
