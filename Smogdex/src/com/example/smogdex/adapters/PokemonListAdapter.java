@@ -2,7 +2,6 @@ package com.example.smogdex.adapters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Locale;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -22,8 +21,9 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 
 	private static final String TAG = PokemonListAdapter.class.getSimpleName();
 
-	private Context mContext;
 	private PokemonListItem[] POKEMON_ITEMS;
+
+	private Context mContext;
 	private ArrayList<PokemonListItem> mDisplayList;
 	private Options mIconDecodeOptions;
 
@@ -764,14 +764,14 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 		mIconDecodeOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
 	}
 
-	public void updateDisplayList(String query, Locale locale) {
+	public void updateDisplayList(String query) {
 		mDisplayList.clear();
 		if (query.isEmpty()) {
 			mDisplayList.addAll(Arrays.asList(POKEMON_ITEMS));
 		} else {
 			Log.d(TAG, "searching for " + query);
-			//			FuzzySearcher.quickSearch(query, POKEMON_ITEMS, mDisplayList);
-			FuzzySearcher.sortedSearch(query, POKEMON_ITEMS, mDisplayList, locale);
+//			FuzzySearcher.quickSearch(query, POKEMON_ITEMS, mDisplayList);
+			FuzzySearcher.sortedSearch(query, POKEMON_ITEMS, mDisplayList);
 		}
 		notifyDataSetChanged();
 	}
