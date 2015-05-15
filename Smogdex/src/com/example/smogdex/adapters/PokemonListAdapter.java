@@ -770,7 +770,7 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 			mDisplayList.addAll(Arrays.asList(POKEMON_ITEMS));
 		} else {
 			Log.d(TAG, "searching for " + query);
-//			FuzzySearcher.quickSearch(query, POKEMON_ITEMS, mDisplayList);
+			//			FuzzySearcher.quickSearch(query, POKEMON_ITEMS, mDisplayList);
 			FuzzySearcher.sortedSearch(query, POKEMON_ITEMS, mDisplayList, locale);
 		}
 		notifyDataSetChanged();
@@ -787,7 +787,7 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 		PokemonListItem item = mDisplayList.get(position);
 
 		// expensive, but not so bad in usage
-		Bitmap image = BitmapFactory.decodeResource(mContext.getResources(), item.image, mIconDecodeOptions);
+		Bitmap image = BitmapFactory.decodeResource(mContext.getResources(), item.mImage, mIconDecodeOptions);
 
 		view.setupForItem(item, image);
 		return view;

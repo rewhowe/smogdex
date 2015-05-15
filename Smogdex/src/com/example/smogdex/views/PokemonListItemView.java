@@ -53,8 +53,8 @@ public class PokemonListItemView extends FrameLayout {
 		Bitmap scaledImage = Bitmap.createScaledBitmap(image, image.getWidth() * 2, image.getHeight() * 2, false);
 
 		mImage.setImageBitmap(scaledImage);
-		mName.setText(item.name);
-		mNumber.setText("#" + String.format("%03d", item.number));
+		mName.setText(item.mName);
+		mNumber.setText("#" + String.format("%03d", item.mNumber));
 	}
 
 }
