@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +22,6 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 
 	private Context mContext;
 	private ArrayList<PokemonListItem> mDisplayList;
-	private Options mIconDecodeOptions;
 
 	private void initializePokemonItems(Context context) {
 		POKEMON_ITEMS = new PokemonListItem[] {
@@ -757,11 +753,6 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 		initializePokemonItems(context);
 		mDisplayList = new ArrayList<PokemonListItem>();
 		mDisplayList.addAll(Arrays.asList(POKEMON_ITEMS));
-
-		mIconDecodeOptions = new BitmapFactory.Options();
-		mIconDecodeOptions.inScaled = false;
-		mIconDecodeOptions.inDither = false;
-		mIconDecodeOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
 	}
 
 	public void updateDisplayList(String query) {
@@ -786,10 +777,7 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 		}
 		PokemonListItem item = mDisplayList.get(position);
 
-		// expensive, but not so bad in usage
-		Bitmap image = BitmapFactory.decodeResource(mContext.getResources(), item.mImage, mIconDecodeOptions);
-
-		view.setupForItem(item, image);
+		view.setupForItem(item, mContext, 2);
 		return view;
 	}
 
@@ -798,4 +786,7 @@ public class PokemonListAdapter extends ArrayAdapter<PokemonListItemView> {
 		return mDisplayList.size();
 	}
 
+	public PokemonListItem getPokemon(int position) {
+		return mDisplayList.get(position);
+	}
 }

@@ -1,6 +1,7 @@
 package com.example.smogdex.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,14 +10,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.smogdex.PokemonListItem;
 import com.example.smogdex.R;
 import com.example.smogdex.adapters.PokemonListAdapter;
 
 
-public class MainActivity extends Activity implements TextWatcher {
+public class MainActivity extends Activity implements TextWatcher, OnItemClickListener {
 
 	private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -42,6 +46,7 @@ public class MainActivity extends Activity implements TextWatcher {
 		mPokemonListAdapter = new PokemonListAdapter(this.getApplicationContext(), 0);
 		ListView plv = (ListView) findViewById(R.id.pokemon_list);
 		plv.setAdapter(mPokemonListAdapter);
+		plv.setOnItemClickListener(this);
 	}
 
 	@Override
@@ -60,16 +65,24 @@ public class MainActivity extends Activity implements TextWatcher {
 	}
 
 	@Override
-	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 	}
 
 	@Override
-	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
 	}
 
 	@Override
-	public void afterTextChanged(Editable arg0) {
-		mPokemonListAdapter.updateDisplayList(arg0.toString());
+	public void afterTextChanged(Editable s) {
+		mPokemonListAdapter.updateDisplayList(s.toString());
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		PokemonListItem selectedPokemon = mPokemonListAdapter.getPokemon(position);
+		Intent intent = new Intent(this, InfoActivity.class);
+		intent.putExtra(PokemonListItem.TAG, selectedPokemon);
+		startActivity(intent);
 	}
 
 }

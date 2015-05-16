@@ -2,6 +2,8 @@ package com.example.smogdex.views;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -18,6 +20,14 @@ public class PokemonListItemView extends FrameLayout {
 	private ImageView mImage;
 	private TextView mName;
 	private TextView mNumber;
+
+	public static final Options ICON_DECODE_OPTIONS;
+	static {
+		ICON_DECODE_OPTIONS = new BitmapFactory.Options();
+		ICON_DECODE_OPTIONS.inScaled = false;
+		ICON_DECODE_OPTIONS.inDither = false;
+		ICON_DECODE_OPTIONS.inPreferredConfig = Bitmap.Config.ARGB_8888;
+	}
 
 	public PokemonListItemView(Context context) {
 		super(context);
@@ -49,8 +59,9 @@ public class PokemonListItemView extends FrameLayout {
 		mNumber = (TextView) findViewById(R.id.number);
 	}
 
-	public void setupForItem(PokemonListItem item, Bitmap image) {
-		Bitmap scaledImage = Bitmap.createScaledBitmap(image, image.getWidth() * 2, image.getHeight() * 2, false);
+	public void setupForItem(PokemonListItem item, Context context, int scale) {
+		Bitmap image = BitmapFactory.decodeResource(context.getResources(), item.mImage, ICON_DECODE_OPTIONS);
+		Bitmap scaledImage = Bitmap.createScaledBitmap(image, image.getWidth() * scale, image.getHeight() * scale, false);
 
 		mImage.setImageBitmap(scaledImage);
 		mName.setText(item.mName);
