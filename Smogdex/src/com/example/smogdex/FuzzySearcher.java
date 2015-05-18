@@ -45,7 +45,7 @@ public class FuzzySearcher {
 	 * @param sortedResult - Search results will be APPENDED to this List. The type MUST match the type of 'items' (not checked).
 	 * @param locale - Used to convert Strings to lower case for string-matching.
 	 */
-	public static void sortedSearch(String query, Object items[], List sortedResult) {
+	public static void sortedSearch(String query, List items, List sortedResult) {
 		List<Pair<Integer, Object>> result = new ArrayList<Pair<Integer, Object>>();
 
 		// subList(1, length+1) is used because splitting on "" returns leading and trailing ""

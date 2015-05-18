@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android" >
     
-    <ImageView
-        android:id="@+id/icon"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|left" />
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical|left" >
+        
+        <TextView
+            android:id="@+id/number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:textColor="@android:color/black" />
+        
+	    <ImageView
+	        android:id="@+id/icon"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" />
+	    
+    </LinearLayout>
     
     <TextView
         android:id="@+id/name"
@@ -14,11 +28,34 @@
         android:textColor="@android:color/black"
         android:layout_gravity="center" />
     
-    <TextView
-        android:id="@+id/number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
-        android:textColor="@android:color/black"
-        android:layout_gravity="center_vertical|right" />
+    <LinearLayout
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical|right"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp" >
+        
+        <TextView
+            android:id="@+id/type1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginBottom="1dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/type_rect" />
+        
+        <TextView
+            android:id="@+id/type2"
+            android:layout_width="match_parent"
+           	android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginTop="1dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/type_rect" />
+        
+    </LinearLayout>
 
 </merge>

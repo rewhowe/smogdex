@@ -2,6 +2,7 @@ package com.example.smogdex;
 
 import java.util.Locale;
 
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -21,16 +22,51 @@ public class PokemonListItem implements Parcelable {
 		}
 	};
 
+	public enum Type {
+		NORMAL("#AAAA77"),
+		FIRE("#FF6622"),
+		FIGHTING("#CC3320"),
+		WATER("#5577FF"),
+		FLYING("#AAAAFF"),
+		GRASS("#55CC33"),
+		POISON("#AA44AA"),
+		ELECTRIC("#FFDD33"),
+		GROUND("#EECC66"),
+		PSYCHIC("#FF5588"),
+		ROCK("#AA7711"),
+		ICE("#99DDDD"),
+		BUG("#AAAA33"),
+		DRAGON("#9955EE"),
+		GHOST("#775599"),
+		DARK("#665544"),
+		STEEL("#CCDDDD"),
+		FAIRY("#EE99AA");
+
+		public final int mColor;
+
+		Type(String color) {
+			mColor = Color.parseColor(color);
+		}
+
+		public String toString() {
+			return name();
+		};
+	}
+
 	public final int mImage;
 	public final String mName;
 	private String mAlias;
 	public final int mNumber;
+	public final Type mType1;
+	public final Type mType2;
 
-	public PokemonListItem(int number, int image, String name, String alias) {
+	public PokemonListItem(int number, int image, String name, String alias, Type type1, Type type2) {
 		mNumber = number;
 		mImage = image;
 		mName = name;
 		mAlias = alias;
+		mType1 = type1;
+		mType2 = type2;
 	}
 
 	private PokemonListItem(Parcel source) {
@@ -38,6 +74,8 @@ public class PokemonListItem implements Parcelable {
 		mImage = source.readInt();
 		mName = source.readString();
 		mAlias = source.readString();
+		mType1 = Type.valueOf(source.readString());
+		mType2 = Type.valueOf(source.readString());
 	}
 
 	@Override
@@ -46,6 +84,8 @@ public class PokemonListItem implements Parcelable {
 		dest.writeInt(mImage);
 		dest.writeString(mName);
 		dest.writeString(getAlias());
+		dest.writeString(mType1.name());
+		dest.writeString(mType2.name());
 	}
 
 	public String getAlias() {
