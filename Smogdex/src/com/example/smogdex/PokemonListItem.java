@@ -73,7 +73,8 @@ public class PokemonListItem implements Parcelable {
 		mName = source.readString();
 		mAlias = source.readString();
 		mType1 = Type.valueOf(source.readString());
-		mType2 = Type.valueOf(source.readString());
+		String type2 = source.readString();
+		mType2 = type2 != null ? Type.valueOf(type2) : null;
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public class PokemonListItem implements Parcelable {
 		dest.writeString(mName);
 		dest.writeString(getAlias());
 		dest.writeString(mType1.name());
-		dest.writeString(mType2.name());
+		dest.writeString(mType2 != null ? mType2.name() : null);
 	}
 
 	public String getAlias() {

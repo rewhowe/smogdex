@@ -11,6 +11,7 @@ public class PokemonDataManager {
 	// private static NetworkTask mNetworkTask;
 
 	public static void getPokemonData(String alias, PokemonDataRequest request) {
+		request.onReceive();
 		/*
 		PokemonData[] data = SmogdexDatabaseHelper.get(alias);
 		if (data != null) {
