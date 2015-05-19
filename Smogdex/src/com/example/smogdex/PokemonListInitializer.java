@@ -91,7 +91,7 @@ public class PokemonListInitializer {
 		list.add(new PokemonListItem(80, R.drawable.p080, context.getString(R.string.p080), null, Type.WATER, Type.PSYCHIC));
 		list.add(new PokemonListItem(81, R.drawable.p081, context.getString(R.string.p081), null, Type.ELECTRIC, Type.STEEL));
 		list.add(new PokemonListItem(82, R.drawable.p082, context.getString(R.string.p082), null, Type.ELECTRIC, Type.STEEL));
-		list.add(new PokemonListItem(83, R.drawable.p083, context.getString(R.string.p083), context.getString(R.string.p083a), Type.NORMAL, Type.FLYING));
+		list.add(new PokemonListItem(83, R.drawable.p083, context.getString(R.string.p083), null, Type.NORMAL, Type.FLYING));
 		list.add(new PokemonListItem(84, R.drawable.p084, context.getString(R.string.p084), null, Type.NORMAL, Type.FLYING));
 		list.add(new PokemonListItem(85, R.drawable.p085, context.getString(R.string.p085), null, Type.NORMAL, Type.FLYING));
 		list.add(new PokemonListItem(86, R.drawable.p086, context.getString(R.string.p086), null, Type.WATER, null));

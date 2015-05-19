@@ -1,7 +1,5 @@
 package com.example.smogdex;
 
-import java.util.Locale;
-
 import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -90,7 +88,7 @@ public class PokemonListItem implements Parcelable {
 
 	public String getAlias() {
 		if (mAlias == null) {
-			return mName.toLowerCase(Locale.ENGLISH);
+			return mName;
 		} else {
 			return mAlias;
 		}

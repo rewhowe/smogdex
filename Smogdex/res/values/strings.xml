@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">Smogdex</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="search_hint">Fuzzy Search a Pokemon by name</string>
 
     <!-- POKEMON LIST -->
     <string name="p001">Bulbasaur</string>
@@ -728,12 +728,9 @@
     <string name="p720">Hoopa</string>
 
     <!-- ALIASES -->
-    <string name="p029a">nidoran-f</string>
-    <string name="p032a">nidoran-m</string>
-    <string name="p083a">farfetchd</string>
-    <string name="p122a">mr_mime</string>
-    <string name="p439a">mime_jr</string>
-    <string name="p678a1">meowstic-m</string>
-    <string name="p678a2">meowstic-f</string>
-    <string name="search_hint">Fuzzy Search a Pokemon by name</string>
+    <string name="p029a">NidoranF</string>
+    <string name="p032a">NidoranM</string>
+    <string name="p122a">Mr.Mime</string>
+    <string name="p439a">MimeJr.</string>
+    <string name="p678a2">Meowstic-F</string>
 </resources>
