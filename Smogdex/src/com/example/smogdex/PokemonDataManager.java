@@ -45,6 +45,7 @@ public class PokemonDataManager {
 			URL[] urls = null;
 			try {
 				urls = new URL[]{
+//						new URL("http://google.ca")
 						new URL(NetworkConstants.URL_BASE + NetworkConstants.OU + NetworkConstants.USAGE)
 				};
 			} catch (MalformedURLException e) {

@@ -31,7 +31,12 @@ public class InfoActivity extends Activity {
 		PokemonDataManager.getPokemonData(mSelectedPokemon.getAlias(), new PokemonDataRequest() {
 			@Override
 			public void onReceive() {
-				InfoActivity.this.findViewById(R.id.loading_spinner).setVisibility(View.GONE);
+				InfoActivity.this.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						InfoActivity.this.findViewById(R.id.loading_spinner).setVisibility(View.GONE);
+					}
+				});
 			}
 		});
 	}
