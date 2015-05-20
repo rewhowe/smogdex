@@ -12,8 +12,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="40dp"
-        android:paddingRight="40dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
         android:paddingBottom="10dp" >
         
 	    <EditText
@@ -45,6 +45,7 @@
     <ListView
         android:id="@+id/pokemon_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+		android:scrollbars="none" />
 
 </LinearLayout>
