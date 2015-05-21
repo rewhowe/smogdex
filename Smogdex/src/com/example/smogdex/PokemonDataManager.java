@@ -45,18 +45,17 @@ public class PokemonDataManager {
 			URL[] urls = null;
 			try {
 				urls = new URL[]{
-//						new URL("http://google.ca")
-						new URL(NetworkConstants.URL_BASE + NetworkConstants.OU + NetworkConstants.USAGE)
+						new URL(NetworkConstants.URL_BASE + NetworkConstants.OU + NetworkConstants.USAGE),
+						new URL(NetworkConstants.URL_BASE + NetworkConstants.UU + NetworkConstants.USAGE),
+						new URL(NetworkConstants.URL_BASE + NetworkConstants.LC + NetworkConstants.USAGE),
+						new URL(NetworkConstants.URL_BASE + NetworkConstants.OU + NetworkConstants.MOVESET),
+						new URL(NetworkConstants.URL_BASE + NetworkConstants.UU + NetworkConstants.MOVESET),
+						new URL(NetworkConstants.URL_BASE + NetworkConstants.LC + NetworkConstants.MOVESET)
 				};
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
 			mNetworkTask.execute(urls);
-			// TODO: create a NetworkResponseHandler
-			//	the handler will probably take a list of input streams or something
-			//	will need to save them to the database
-			//  after everything is done, call request.onReceive()
-			// TODO: create a new NetworkTask with the response handler
 		} else {
 			// TODO: make some sort of queue to get the data
 		}
