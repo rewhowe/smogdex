@@ -5,44 +5,49 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class NetworkTask extends AsyncTask<URL, Void, Void> {
 
 	private static final String TAG = NetworkTask.class.getSimpleName();
 
-	public static interface NetworkResponseCallback {
-		// TODO: fill in params
-		public void onSuccess();
-		public void onError();
+	public static abstract class NetworkResponseHandler {
+		public abstract void onReceive(int which, InputStream is);
+		public abstract void onError(int which);
+		public abstract void onSuccess();
+		public abstract void onFailure(int numErrors);
 	}
 
-	private final NetworkResponseCallback mCallback;
+	private final NetworkResponseHandler mHandler;
 
-	public NetworkTask(NetworkResponseCallback callback) {
-		mCallback = callback;
+	public NetworkTask(NetworkResponseHandler Handler) {
+		mHandler = Handler;
 	}
 
 	@Override
 	protected Void doInBackground(URL... urls) {
-		ArrayList<InputStream> results = new ArrayList<InputStream>();
-		for (URL url : urls) {
+		int numErrors = 0;
+		for (int i = 0; i < urls.length; i++) {
+			URL url = urls[i];
 			HttpURLConnection urlConnection = null;
 			try {
 				urlConnection = (HttpURLConnection) url.openConnection();
-				InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-				results.add(in);
+				InputStream is = new BufferedInputStream(urlConnection.getInputStream());
+				mHandler.onReceive(i, is);
 			} catch (IOException e) {
 				e.printStackTrace();
+				numErrors++;
+				mHandler.onError(i);
 			} finally {
 				urlConnection.disconnect();
 			}
 		}
-		Log.d(TAG, "resuts = " + results.size());
-		mCallback.onSuccess();
+		if (numErrors == 0) {
+			mHandler.onSuccess();
+		} else {
+			mHandler.onFailure(numErrors);
+		}
 		return null;
 	}
 

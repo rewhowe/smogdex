@@ -88,11 +88,7 @@ public class PokemonListItem implements Parcelable {
 	}
 
 	public String getAlias() {
-		if (mAlias == null) {
-			return mName;
-		} else {
-			return mAlias;
-		}
+		return mAlias == null ? mName : mAlias;
 	}
 
 	public String getFormattedNumber() {

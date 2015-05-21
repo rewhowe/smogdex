@@ -13,7 +13,9 @@ public class SmogdexConstants {
 
 		public static final String USAGE = "usagedata.js";
 		public static final String MOVESET = "moveset.js";
+
+		private NetworkConstants() {}
 	}
 
-
+	private SmogdexConstants() {}
 }
