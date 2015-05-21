@@ -28,6 +28,7 @@ public class InfoActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		setTitle(mSelectedPokemon.getFormattedNumber() + " " + mSelectedPokemon.mName);
 		PokemonDataManager.getPokemonData(mSelectedPokemon.getAlias(), new PokemonDataRequest() {
 			@Override
 			public void onReceive() {

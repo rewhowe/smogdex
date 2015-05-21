@@ -95,6 +95,10 @@ public class PokemonListItem implements Parcelable {
 		}
 	}
 
+	public String getFormattedNumber() {
+		return "#" + String.format("%03d", mNumber);
+	}
+
 	@Override
 	public String toString() {
 		return mName;
