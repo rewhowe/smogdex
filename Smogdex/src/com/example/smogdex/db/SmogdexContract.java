@@ -2,6 +2,11 @@ package com.example.smogdex.db;
 
 import android.provider.BaseColumns;
 
+/**
+ * Defines the database schema. If this is modified, you MUST update SmogdexDBHelper.DATABASE_VERSION.
+ * @author rewhowe
+ *
+ */
 public final class SmogdexContract {
 
 	public static final String CREATE_TABLE = "CREATE TABLE ";
@@ -20,7 +25,7 @@ public final class SmogdexContract {
 	public static final String BRACKET_CLOSE = ")";
 	public static final String COMMA_SEP = ",";
 
-	public static abstract class Pokemon implements BaseColumns {
+	public static abstract class PokemonTable implements BaseColumns {
 		public static final String TABLE_NAME = "Pokemon";
 		public static final String COLUMN_NAME_ALIAS = "alias";
 		public static final String COLUMN_NAME_HP = "hp";
@@ -44,7 +49,7 @@ public final class SmogdexContract {
 				DROP_TABLE + TABLE_NAME;
 	}
 
-	public static abstract class Usage implements BaseColumns {
+	public static abstract class UsageTable implements BaseColumns {
 		public static final String TABLE_NAME = "Usage";
 		public static final String COLUMN_NAME_ALIAS = "alias";
 		public static final String COLUMN_NAME_FORMAT = "format";
@@ -57,14 +62,14 @@ public final class SmogdexContract {
 				+ COLUMN_NAME_USAGE + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
 				+ PRIMARY_KEY + BRACKET_OPEN + COLUMN_NAME_ALIAS + COMMA_SEP + COLUMN_NAME_FORMAT + BRACKET_CLOSE + COMMA_SEP
 				+ FOREIGN_KEY + BRACKET_OPEN + COLUMN_NAME_ALIAS + BRACKET_CLOSE
-				+ REFERENCES + Pokemon.TABLE_NAME + BRACKET_OPEN + Pokemon.COLUMN_NAME_ALIAS + BRACKET_CLOSE + BRACKET_CLOSE;
+				+ REFERENCES + PokemonTable.TABLE_NAME + BRACKET_OPEN + PokemonTable.COLUMN_NAME_ALIAS + BRACKET_CLOSE + BRACKET_CLOSE;
 
 		public static final String DROP =
 				DROP_TABLE + TABLE_NAME;
 	}
 
-	public static abstract class Moveset implements BaseColumns {
-		public static final String TABLE_NAME = "Moveset";
+	public static abstract class BuildTable implements BaseColumns {
+		public static final String TABLE_NAME = "Build";
 		public static final String COLUMN_NAME_ALIAS = "alias";
 		public static final String COLUMN_NAME_FORMAT = "format";
 		public static final String COLUMN_NAME_NAME = "name";
@@ -78,7 +83,91 @@ public final class SmogdexContract {
 				+ COLUMN_NAME_NAME + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
 				+ COLUMN_NAME_USAGE + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
 				+ FOREIGN_KEY + BRACKET_OPEN + COLUMN_NAME_ALIAS + BRACKET_CLOSE
-				+ REFERENCES + Pokemon.TABLE_NAME + BRACKET_OPEN + Pokemon.COLUMN_NAME_ALIAS + BRACKET_CLOSE + BRACKET_CLOSE;
+				+ REFERENCES + PokemonTable.TABLE_NAME + BRACKET_OPEN + PokemonTable.COLUMN_NAME_ALIAS + BRACKET_CLOSE + BRACKET_CLOSE;
+
+		public static final String DROP =
+				DROP_TABLE + TABLE_NAME;
+	}
+
+	public static abstract class AbilityTable implements BaseColumns {
+		public static final String TABLE_NAME = "Ability";
+		public static final String COLUMN_NAME_ALIAS = "alias";
+		public static final String COLUMN_NAME_FORMAT = "format";
+		public static final String COLUMN_NAME_NAME = "name";
+		public static final String COLUMN_NAME_USAGE = "usage";
+
+		public static final String CREATE =
+				CREATE_TABLE + TABLE_NAME + BRACKET_OPEN
+				+ _ID + DATA_TYPE_INT + PRIMARY_KEY + AUTO_INCREMENT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_ALIAS + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_FORMAT + DATA_TYPE_INT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_NAME + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_USAGE + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ FOREIGN_KEY + BRACKET_OPEN + COLUMN_NAME_ALIAS + BRACKET_CLOSE
+				+ REFERENCES + PokemonTable.TABLE_NAME + BRACKET_OPEN + PokemonTable.COLUMN_NAME_ALIAS + BRACKET_CLOSE + BRACKET_CLOSE;
+
+		public static final String DROP =
+				DROP_TABLE + TABLE_NAME;
+	}
+
+	public static abstract class MoveTable implements BaseColumns {
+		public static final String TABLE_NAME = "Move";
+		public static final String COLUMN_NAME_ALIAS = "alias";
+		public static final String COLUMN_NAME_FORMAT = "format";
+		public static final String COLUMN_NAME_NAME = "name";
+		public static final String COLUMN_NAME_USAGE = "usage";
+
+		public static final String CREATE =
+				CREATE_TABLE + TABLE_NAME + BRACKET_OPEN
+				+ _ID + DATA_TYPE_INT + PRIMARY_KEY + AUTO_INCREMENT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_ALIAS + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_FORMAT + DATA_TYPE_INT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_NAME + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_USAGE + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ FOREIGN_KEY + BRACKET_OPEN + COLUMN_NAME_ALIAS + BRACKET_CLOSE
+				+ REFERENCES + PokemonTable.TABLE_NAME + BRACKET_OPEN + PokemonTable.COLUMN_NAME_ALIAS + BRACKET_CLOSE + BRACKET_CLOSE;
+
+		public static final String DROP =
+				DROP_TABLE + TABLE_NAME;
+	}
+
+	public static abstract class ItemTable implements BaseColumns {
+		public static final String TABLE_NAME = "Item";
+		public static final String COLUMN_NAME_ALIAS = "alias";
+		public static final String COLUMN_NAME_FORMAT = "format";
+		public static final String COLUMN_NAME_NAME = "name";
+		public static final String COLUMN_NAME_USAGE = "usage";
+
+		public static final String CREATE =
+				CREATE_TABLE + TABLE_NAME + BRACKET_OPEN
+				+ _ID + DATA_TYPE_INT + PRIMARY_KEY + AUTO_INCREMENT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_ALIAS + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_FORMAT + DATA_TYPE_INT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_NAME + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_USAGE + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ FOREIGN_KEY + BRACKET_OPEN + COLUMN_NAME_ALIAS + BRACKET_CLOSE
+				+ REFERENCES + PokemonTable.TABLE_NAME + BRACKET_OPEN + PokemonTable.COLUMN_NAME_ALIAS + BRACKET_CLOSE + BRACKET_CLOSE;
+
+		public static final String DROP =
+				DROP_TABLE + TABLE_NAME;
+	}
+
+	public static abstract class CounterTable implements BaseColumns {
+		public static final String TABLE_NAME = "Counter";
+		public static final String COLUMN_NAME_ALIAS = "alias";
+		public static final String COLUMN_NAME_FORMAT = "format";
+		public static final String COLUMN_NAME_NAME = "name";
+		public static final String COLUMN_NAME_USAGE = "usage";
+
+		public static final String CREATE =
+				CREATE_TABLE + TABLE_NAME + BRACKET_OPEN
+				+ _ID + DATA_TYPE_INT + PRIMARY_KEY + AUTO_INCREMENT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_ALIAS + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_FORMAT + DATA_TYPE_INT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_NAME + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_USAGE + DATA_TYPE_TEXT + NOT_NULL + COMMA_SEP
+				+ FOREIGN_KEY + BRACKET_OPEN + COLUMN_NAME_ALIAS + BRACKET_CLOSE
+				+ REFERENCES + PokemonTable.TABLE_NAME + BRACKET_OPEN + PokemonTable.COLUMN_NAME_ALIAS + BRACKET_CLOSE + BRACKET_CLOSE;
 
 		public static final String DROP =
 				DROP_TABLE + TABLE_NAME;

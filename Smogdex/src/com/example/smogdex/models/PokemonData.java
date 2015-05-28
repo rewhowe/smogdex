@@ -25,6 +25,7 @@ public class PokemonData /*extends Serializable*/ {
 	}
 
 	public class MovesetData {
+
 		private MovesetData() {
 			mBuilds = new ArrayList<Pair<String, String>>();
 			mAbilities = new ArrayList<Pair<String, String>>();

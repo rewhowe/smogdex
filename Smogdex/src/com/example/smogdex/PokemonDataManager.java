@@ -34,6 +34,7 @@ public class PokemonDataManager {
 		mRequestedPokemon = selectedPokemon;
 		mPendingRequest = request;
 
+		// TODO: instead, just load the datamap from the db
 //		PokemonData[] data = SmogdexDatabaseHelper.get(alias);
 //		if (data != null) {
 //		    request.onReceive(data);
@@ -197,6 +198,7 @@ public class PokemonDataManager {
 			public void onSuccess() {
 				Log.d(TAG, "fetchMovesetData success");
 				mPendingRequest.onReceive(mDataMap.get(mRequestedPokemon));
+				// TODO: store datamap in db
 			}
 
 			@Override
