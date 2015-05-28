@@ -35,7 +35,7 @@ public class InfoActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		setTitle(mSelectedPokemon.getFormattedNumber() + " " + mSelectedPokemon.mName);
-		PokemonDataManager.getPokemonData(mSelectedPokemon.getAlias(), new PokemonDataRequest() {
+		PokemonDataManager.getPokemonData(mSelectedPokemon, new PokemonDataRequest() {
 			@Override
 			public void onReceive(PokemonData data) {
 				InfoActivity.this.runOnUiThread(new Runnable() {

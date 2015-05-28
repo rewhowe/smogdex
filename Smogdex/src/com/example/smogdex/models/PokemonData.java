@@ -7,13 +7,21 @@ import android.util.Pair;
 
 public class PokemonData /*extends Serializable*/ {
 
-	public static class Format {
+	public static abstract class Format {
 		public static final int OU = 0;
 		public static final int UU = 1;
 		public static final int LC = 2;
 		public static final int NUM_FORMATS = 3;
+	}
 
-		private Format() {}
+	public class StatsData {
+		// TODO: convert to gson model
+		public Integer mHP = 0;
+		public Integer mAtk = 0;
+		public Integer mDef = 0;
+		public Integer mSpA = 0;
+		public Integer mSpD = 0;
+		public Integer mSpe = 0;
 	}
 
 	public class MovesetData {
@@ -25,31 +33,11 @@ public class PokemonData /*extends Serializable*/ {
 			mCounters = new ArrayList<Pair<String, String>>();
 		}
 
-		private final List<Pair<String, String>> mBuilds;
-		private final List<Pair<String, String>> mAbilities;
-		private final List<Pair<String, String>> mMoves;
-		private final List<Pair<String, String>> mItems;
-		private final List<Pair<String, String>> mCounters;
-
-		public List<Pair<String, String>> getBuilds() {
-			return mBuilds;
-		}
-
-		public List<Pair<String, String>> getAbilities() {
-			return mAbilities;
-		}
-
-		public List<Pair<String, String>> getMoves() {
-			return mMoves;
-		}
-
-		public List<Pair<String, String>> getItems() {
-			return mItems;
-		}
-
-		public List<Pair<String, String>> getCounters() {
-			return mCounters;
-		}
+		public final List<Pair<String, String>> mBuilds;
+		public final List<Pair<String, String>> mAbilities;
+		public final List<Pair<String, String>> mMoves;
+		public final List<Pair<String, String>> mItems;
+		public final List<Pair<String, String>> mCounters;
 
 		public void addBuild(String build, String usage) {
 			mBuilds.add(new Pair<String, String>(build, usage));
@@ -72,34 +60,20 @@ public class PokemonData /*extends Serializable*/ {
 		}
 	}
 
-	private final String mAlias;
-	private final String mUsage[];
-	private final MovesetData mMovesetData[];
+	public final String mAlias;
+	public final String mUsage[];
+	public final MovesetData mMovesetData[];
+	public StatsData mStatsData;
 
 	public PokemonData(String alias) {
 		mAlias = alias;
 		mUsage = new String[Format.NUM_FORMATS];
+		mStatsData = new StatsData();
 		mMovesetData = new MovesetData[] {
 				new MovesetData(),
 				new MovesetData(),
 				new MovesetData()
 		};
-	}
-
-	public String getUsage(int format) {
-		return mUsage[format];
-	}
-
-	public MovesetData getMovesetData(int format) {
-		return mMovesetData[format];
-	}
-
-	public void setUsage(int format, String usage) {
-		mUsage[format] = usage;
-	}
-
-	public void setMovesetData(int format, MovesetData data) {
-		mMovesetData[format] = data;
 	}
 
 }

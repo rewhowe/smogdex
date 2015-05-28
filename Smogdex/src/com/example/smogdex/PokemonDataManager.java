@@ -25,14 +25,13 @@ public class PokemonDataManager {
 		public void onReceive(PokemonData data);
 	}
 
-	private static NetworkTask mNetworkTask;
 	private static HashMap<String, PokemonData> mDataMap;
-	private static String mRequestedAlias;
 	private static PokemonDataRequest mPendingRequest;
+	private static PokemonListItem mRequestedPokemon;
+	private static NetworkTask mNetworkTask;
 
-	// TODO: change String alias to PokemonListItem selectedPokemon so we can grab the number
-	public static void getPokemonData(final String alias, final PokemonDataRequest request) {
-		mRequestedAlias = alias;
+	public static void getPokemonData(final PokemonListItem selectedPokemon, final PokemonDataRequest request) {
+		mRequestedPokemon = selectedPokemon;
 		mPendingRequest = request;
 
 //		PokemonData[] data = SmogdexDatabaseHelper.get(alias);
@@ -40,9 +39,9 @@ public class PokemonDataManager {
 //		    request.onReceive(data);
 //		}
 		// TODO: replace with above, after the db is implemented
-		if (mDataMap != null && mDataMap.containsKey(alias)) {
+		if (mDataMap != null && mDataMap.containsKey(mRequestedPokemon.getAlias())) {
 			Log.d(TAG, "receive from data map");
-			request.onReceive(mDataMap.get(alias));
+			request.onReceive(mDataMap.get(mRequestedPokemon.getAlias()));
 			return;
 		}
 
@@ -84,7 +83,7 @@ public class PokemonDataManager {
 							if (!mDataMap.containsKey(name)) {
 								mDataMap.put(name, new PokemonData(name));
 							}
-							mDataMap.get(name).setUsage(which, usage);
+							mDataMap.get(name).mUsage[which] = usage;
 						}
 					}
 				} catch (IOException e) {
@@ -160,15 +159,15 @@ public class PokemonDataManager {
 											String val = m.group(2);
 
 											if (attr.equals("abilities")) {
-												mDataMap.get(name).getMovesetData(which).addAbility(key, val);
+												mDataMap.get(name).mMovesetData[which].addAbility(key, val);
 											} else if (attr.equals("items")) {
-												mDataMap.get(name).getMovesetData(which).addItem(key, val);
+												mDataMap.get(name).mMovesetData[which].addItem(key, val);
 											} else if (attr.equals("spreads")) {
-												mDataMap.get(name).getMovesetData(which).addBuild(key, val);
+												mDataMap.get(name).mMovesetData[which].addBuild(key, val);
 											} else if (attr.equals("moves")) {
-												mDataMap.get(name).getMovesetData(which).addMove(key, val);
+												mDataMap.get(name).mMovesetData[which].addMove(key, val);
 											} else if (attr.equals("checks")) {
-												mDataMap.get(name).getMovesetData(which).addCounter(key, val);
+												mDataMap.get(name).mMovesetData[which].addCounter(key, val);
 											} else {
 												// skip
 											}
@@ -197,7 +196,7 @@ public class PokemonDataManager {
 			@Override
 			public void onSuccess() {
 				Log.d(TAG, "fetchMovesetData success");
-				mPendingRequest.onReceive(mDataMap.get(mRequestedAlias));
+				mPendingRequest.onReceive(mDataMap.get(mRequestedPokemon));
 			}
 
 			@Override
