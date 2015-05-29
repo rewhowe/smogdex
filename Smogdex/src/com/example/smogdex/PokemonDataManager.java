@@ -197,7 +197,7 @@ public class PokemonDataManager {
 			@Override
 			public void onSuccess() {
 				Log.d(TAG, "fetchMovesetData success");
-				mPendingRequest.onReceive(mDataMap.get(mRequestedPokemon));
+				mPendingRequest.onReceive(mDataMap.get(mRequestedPokemon.getAlias()));
 				// TODO: store datamap in db
 			}
 
