@@ -2,25 +2,23 @@ package com.example.smogdex.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.smogdex.db.SmogdexContract.AbilityTable;
-import com.example.smogdex.db.SmogdexContract.BuildTable;
-import com.example.smogdex.db.SmogdexContract.CounterTable;
-import com.example.smogdex.db.SmogdexContract.ItemTable;
-import com.example.smogdex.db.SmogdexContract.MoveTable;
+import com.example.smogdex.db.SmogdexContract.MovesetTable;
 import com.example.smogdex.db.SmogdexContract.PokemonTable;
 import com.example.smogdex.db.SmogdexContract.UsageTable;
 import com.example.smogdex.models.PokemonData;
 import com.example.smogdex.models.PokemonData.Format;
 import com.example.smogdex.models.PokemonData.MovesetData;
+import com.example.smogdex.models.PokemonData.StatsData;
 
 public class SmogdexDBHelper extends SQLiteOpenHelper {
 
 	public static final String DATABASE_NAME = "Smogdex.db";
-	public static final int DATABASE_VERSION = 1;
+	public static final int DATABASE_VERSION = 2;
 
 	public SmogdexDBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,22 +28,29 @@ public class SmogdexDBHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(PokemonTable.CREATE);
 		db.execSQL(UsageTable.CREATE);
-		db.execSQL(BuildTable.CREATE);
-		db.execSQL(AbilityTable.CREATE);
-		db.execSQL(MoveTable.CREATE);
-		db.execSQL(ItemTable.CREATE);
-		db.execSQL(CounterTable.CREATE);
+		db.execSQL(MovesetTable.CREATE);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL(CounterTable.DROP);
-		db.execSQL(ItemTable.DROP);
-		db.execSQL(MoveTable.DROP);
-		db.execSQL(AbilityTable.DROP);
-		db.execSQL(BuildTable.DROP);
+		db.execSQL(MovesetTable.DROP);
 		db.execSQL(UsageTable.DROP);
 		db.execSQL(PokemonTable.DROP);
+	}
+
+	public static String makeSelection(String... params) {
+		if (params.length == 0) {
+			return null;
+		}
+		String EQUALS_ARG = "=?";
+		String AND = " AND ";
+
+		StringBuilder selection = new StringBuilder(params[0] + EQUALS_ARG);
+		for (int i = 1; i < params.length; i++) {
+			selection.append(AND).append(params[i]).append(EQUALS_ARG);
+		}
+
+		return selection.toString();
 	}
 
 	public void post(PokemonData data) {
@@ -83,59 +88,59 @@ public class SmogdexDBHelper extends SQLiteOpenHelper {
 			for (int format = 0; format < Format.NUM_FORMATS; format++) {
 				MovesetData movesetData = data.mMovesetData[format];
 
-				// BuildTable
 				for (int i = 0; i < movesetData.mBuilds.size(); i++) {
 					ContentValues values = new ContentValues();
-					values.put(BuildTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(BuildTable.COLUMN_NAME_FORMAT, format);
-					values.put(BuildTable.COLUMN_NAME_NAME, movesetData.mBuilds.get(i).first);
-					values.put(BuildTable.COLUMN_NAME_USAGE, movesetData.mBuilds.get(i).second);
+					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_BUILD);
+					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mBuilds.get(i).first);
+					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mBuilds.get(i).second);
 
-					db.insertOrThrow(BuildTable.TABLE_NAME, null, values);
+					db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
 				}
 
-				// AbilityTable
 				for (int i = 0; i < movesetData.mAbilities.size(); i++) {
 					ContentValues values = new ContentValues();
-					values.put(AbilityTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(AbilityTable.COLUMN_NAME_FORMAT, format);
-					values.put(AbilityTable.COLUMN_NAME_NAME, movesetData.mAbilities.get(i).first);
-					values.put(AbilityTable.COLUMN_NAME_USAGE, movesetData.mAbilities.get(i).second);
+					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_ABILITY);
+					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mAbilities.get(i).first);
+					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mAbilities.get(i).second);
 
-					db.insertOrThrow(AbilityTable.TABLE_NAME, null, values);
+					db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
 				}
 
-				// MoveTable
 				for (int i = 0; i < movesetData.mMoves.size(); i++) {
 					ContentValues values = new ContentValues();
-					values.put(MoveTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(MoveTable.COLUMN_NAME_FORMAT, format);
-					values.put(MoveTable.COLUMN_NAME_NAME, movesetData.mMoves.get(i).first);
-					values.put(MoveTable.COLUMN_NAME_USAGE, movesetData.mMoves.get(i).second);
+					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_MOVE);
+					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mMoves.get(i).first);
+					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mMoves.get(i).second);
 
-					db.insertOrThrow(MoveTable.TABLE_NAME, null, values);
+					db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
 				}
 
-				// ItemTable
 				for (int i = 0; i < movesetData.mItems.size(); i++) {
 					ContentValues values = new ContentValues();
-					values.put(ItemTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(ItemTable.COLUMN_NAME_FORMAT, format);
-					values.put(ItemTable.COLUMN_NAME_NAME, movesetData.mItems.get(i).first);
-					values.put(ItemTable.COLUMN_NAME_USAGE, movesetData.mItems.get(i).second);
+					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_ITEM);
+					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mItems.get(i).first);
+					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mItems.get(i).second);
 
-					db.insertOrThrow(ItemTable.TABLE_NAME, null, values);
+					db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
 				}
 
-				// CounterTable
 				for (int i = 0; i < movesetData.mCounters.size(); i++) {
 					ContentValues values = new ContentValues();
-					values.put(CounterTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(CounterTable.COLUMN_NAME_FORMAT, format);
-					values.put(CounterTable.COLUMN_NAME_NAME, movesetData.mCounters.get(i).first);
-					values.put(CounterTable.COLUMN_NAME_USAGE, movesetData.mCounters.get(i).second);
+					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_COUNTER);
+					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mCounters.get(i).first);
+					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mCounters.get(i).second);
 
-					db.insert(CounterTable.TABLE_NAME, null, values);
+					db.insert(MovesetTable.TABLE_NAME, null, values);
 				}
 			}
 
@@ -146,7 +151,108 @@ public class SmogdexDBHelper extends SQLiteOpenHelper {
 		} finally {
 			db.endTransaction();
 		}
-
+		db.close();
 	}
 
+
+	public PokemonData get(String alias) {
+		SQLiteDatabase db = getReadableDatabase();
+
+		PokemonData data = new PokemonData(alias);
+
+		try {
+			Cursor pokemonCursor = db.query(
+					PokemonTable.TABLE_NAME,
+					new String[] {
+							PokemonTable.COLUMN_NAME_HP,
+							PokemonTable.COLUMN_NAME_ATK,
+							PokemonTable.COLUMN_NAME_DEF,
+							PokemonTable.COLUMN_NAME_SPA,
+							PokemonTable.COLUMN_NAME_SPD,
+							PokemonTable.COLUMN_NAME_SPE,
+					},
+					makeSelection(PokemonTable.COLUMN_NAME_ALIAS),
+					new String[] {alias},
+					null,
+					null,
+					null);
+			boolean exists = pokemonCursor.moveToFirst();
+			if (!exists) {
+				return null;
+			}
+			StatsData stats = new StatsData();
+			stats.mHP = pokemonCursor.getInt(0);
+			stats.mAtk = pokemonCursor.getInt(1);
+			stats.mDef = pokemonCursor.getInt(2);
+			stats.mSpA = pokemonCursor.getInt(3);
+			stats.mSpD = pokemonCursor.getInt(4);
+			stats.mSpe = pokemonCursor.getInt(5);
+			pokemonCursor.close();
+			data.mStatsData = stats;
+
+			Cursor usageCursor = db.query(
+					UsageTable.TABLE_NAME,
+					new String[] {
+							UsageTable.COLUMN_NAME_FORMAT,
+							UsageTable.COLUMN_NAME_USAGE
+					},
+					makeSelection(UsageTable.COLUMN_NAME_ALIAS),
+					new String[] {alias},
+					null,
+					null,
+					null);
+			usageCursor.moveToPosition(-1);
+			while (usageCursor.moveToNext()) {
+				data.mUsage[usageCursor.getInt(0)] = usageCursor.getString(1);
+			}
+			usageCursor.close();
+
+			Cursor movesetCursor = db.query(
+					MovesetTable.TABLE_NAME,
+					new String[] {
+							MovesetTable.COLUMN_NAME_FORMAT,
+							MovesetTable.COLUMN_NAME_SECTION,
+							MovesetTable.COLUMN_NAME_NAME,
+							MovesetTable.COLUMN_NAME_USAGE
+					},
+					makeSelection(MovesetTable.COLUMN_NAME_ALIAS),
+					new String[] {alias},
+					MovesetTable.COLUMN_NAME_SECTION,
+					null,
+					null); // TODO: may need to sort by usage; see PokemonData.MovesetData
+			movesetCursor.moveToPosition(-1);
+			while (movesetCursor.moveToNext()) {
+				int format = movesetCursor.getInt(0);
+				int section = movesetCursor.getInt(1);
+				String name = movesetCursor.getString(2);
+				String usage = movesetCursor.getString(3);
+
+				switch (section) {
+				case MovesetTable.SECTION_BUILD:
+					data.mMovesetData[format].addBuild(name, usage);
+					break;
+				case MovesetTable.SECTION_ABILITY:
+					data.mMovesetData[format].addAbility(name, usage);
+					break;
+				case MovesetTable.SECTION_MOVE:
+					data.mMovesetData[format].addMove(name, usage);
+					break;
+				case MovesetTable.SECTION_ITEM:
+					data.mMovesetData[format].addItem(name, usage);
+					break;
+				case MovesetTable.SECTION_COUNTER:
+					data.mMovesetData[format].addCounter(name, usage);
+				default:
+					break;
+				}
+			}
+
+		} catch (Exception e) {
+			// if anything goes wrong, just return null
+			return null;
+		}
+		db.close();
+
+		return data;
+	}
 }

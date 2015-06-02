@@ -14,7 +14,7 @@ public class PokemonData /*extends Serializable*/ {
 		public static final int NUM_FORMATS = 3;
 	}
 
-	public class StatsData {
+	public static class StatsData {
 		// TODO: convert to gson model
 		public Integer mHP = 0;
 		public Integer mAtk = 0;
@@ -24,6 +24,11 @@ public class PokemonData /*extends Serializable*/ {
 		public Integer mSpe = 0;
 	}
 
+	/*
+	 * It might be a good idea to change these to String:Integer pairs in order to
+	 * allow sorting. They should be in-order right now, but technically it'll be
+	 * undefined when retrieving from the db.
+	 */
 	public class MovesetData {
 
 		private MovesetData() {
