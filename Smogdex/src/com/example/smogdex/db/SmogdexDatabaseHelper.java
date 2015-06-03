@@ -20,7 +20,20 @@ public class SmogdexDatabaseHelper extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "Smogdex.db";
 	public static final int DATABASE_VERSION = 2;
 
-	public SmogdexDatabaseHelper(Context context) {
+	public static SmogdexDatabaseHelper mInstance;
+
+	public static void initialize(Context context) {
+		mInstance = new SmogdexDatabaseHelper(context);
+	}
+
+	public static SmogdexDatabaseHelper getInstance() {
+		if (mInstance == null) {
+			throw new IllegalStateException(SmogdexDatabaseHelper.class.getSimpleName() + " has not been initialized");
+		}
+		return mInstance;
+	}
+
+	private SmogdexDatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
@@ -54,205 +67,220 @@ public class SmogdexDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void post(PokemonData data) {
-		SQLiteDatabase db = getWritableDatabase();
+		synchronized(this) {
+			SQLiteDatabase db = getWritableDatabase();
 
-		try {
-			// VERY important - we're doing a huge batch insertion
-			db.beginTransaction();
+			try {
+				// VERY important - we're doing a huge batch insertion
+				db.beginTransaction();
 
-			// PokemonTable
-			ContentValues pokemonValues = new ContentValues();
-			pokemonValues.put(PokemonTable.COLUMN_NAME_ALIAS, data.mAlias);
-			pokemonValues.put(PokemonTable.COLUMN_NAME_HP, data.mStatsData.mHP);
-			pokemonValues.put(PokemonTable.COLUMN_NAME_ATK, data.mStatsData.mAtk);
-			pokemonValues.put(PokemonTable.COLUMN_NAME_DEF, data.mStatsData.mDef);
-			pokemonValues.put(PokemonTable.COLUMN_NAME_SPA, data.mStatsData.mSpA);
-			pokemonValues.put(PokemonTable.COLUMN_NAME_SPD, data.mStatsData.mSpD);
-			pokemonValues.put(PokemonTable.COLUMN_NAME_SPE, data.mStatsData.mSpe);
+				// PokemonTable
+				ContentValues pokemonValues = new ContentValues();
+				pokemonValues.put(PokemonTable.COLUMN_NAME_ALIAS, data.mAlias);
+				pokemonValues.put(PokemonTable.COLUMN_NAME_HP, data.mStatsData.mHP);
+				pokemonValues.put(PokemonTable.COLUMN_NAME_ATK, data.mStatsData.mAtk);
+				pokemonValues.put(PokemonTable.COLUMN_NAME_DEF, data.mStatsData.mDef);
+				pokemonValues.put(PokemonTable.COLUMN_NAME_SPA, data.mStatsData.mSpA);
+				pokemonValues.put(PokemonTable.COLUMN_NAME_SPD, data.mStatsData.mSpD);
+				pokemonValues.put(PokemonTable.COLUMN_NAME_SPE, data.mStatsData.mSpe);
 
-			db.insertOrThrow(PokemonTable.TABLE_NAME, null, pokemonValues);
+				db.insertOrThrow(PokemonTable.TABLE_NAME, null, pokemonValues);
 
-			// UsageTable
-			for (int format = 0; format < Format.NUM_FORMATS; format++) {
-				if (data.mUsage[format] != null) {
-					ContentValues usageValues = new ContentValues();
-					usageValues.put(UsageTable.COLUMN_NAME_ALIAS, data.mAlias);
-					usageValues.put(UsageTable.COLUMN_NAME_FORMAT, format);
-					usageValues.put(UsageTable.COLUMN_NAME_USAGE, data.mUsage[format]);
+				// UsageTable
+				for (int format = 0; format < Format.NUM_FORMATS; format++) {
+					if (data.mUsage[format] != null) {
+						ContentValues usageValues = new ContentValues();
+						usageValues.put(UsageTable.COLUMN_NAME_ALIAS, data.mAlias);
+						usageValues.put(UsageTable.COLUMN_NAME_FORMAT, format);
+						usageValues.put(UsageTable.COLUMN_NAME_USAGE, data.mUsage[format]);
 
-					db.insertOrThrow(UsageTable.TABLE_NAME, null, usageValues);
+						db.insertOrThrow(UsageTable.TABLE_NAME, null, usageValues);
+					}
 				}
+
+				// Moveset
+				for (int format = 0; format < Format.NUM_FORMATS; format++) {
+					MovesetData movesetData = data.mMovesetData[format];
+
+					for (int i = 0; i < movesetData.mBuilds.size(); i++) {
+						ContentValues values = new ContentValues();
+						values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+						values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+						values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_BUILD);
+						values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mBuilds.get(i).first);
+						values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mBuilds.get(i).second);
+
+						db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
+					}
+
+					for (int i = 0; i < movesetData.mAbilities.size(); i++) {
+						ContentValues values = new ContentValues();
+						values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+						values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+						values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_ABILITY);
+						values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mAbilities.get(i).first);
+						values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mAbilities.get(i).second);
+
+						db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
+					}
+
+					for (int i = 0; i < movesetData.mMoves.size(); i++) {
+						ContentValues values = new ContentValues();
+						values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+						values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+						values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_MOVE);
+						values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mMoves.get(i).first);
+						values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mMoves.get(i).second);
+
+						db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
+					}
+
+					for (int i = 0; i < movesetData.mItems.size(); i++) {
+						ContentValues values = new ContentValues();
+						values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+						values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+						values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_ITEM);
+						values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mItems.get(i).first);
+						values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mItems.get(i).second);
+
+						db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
+					}
+
+					for (int i = 0; i < movesetData.mCounters.size(); i++) {
+						ContentValues values = new ContentValues();
+						values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
+						values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
+						values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_COUNTER);
+						values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mCounters.get(i).first);
+						values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mCounters.get(i).second);
+
+						db.insert(MovesetTable.TABLE_NAME, null, values);
+					}
+				}
+
+				db.setTransactionSuccessful();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				db.endTransaction();
 			}
-
-			// Moveset
-			for (int format = 0; format < Format.NUM_FORMATS; format++) {
-				MovesetData movesetData = data.mMovesetData[format];
-
-				for (int i = 0; i < movesetData.mBuilds.size(); i++) {
-					ContentValues values = new ContentValues();
-					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
-					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_BUILD);
-					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mBuilds.get(i).first);
-					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mBuilds.get(i).second);
-
-					db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
-				}
-
-				for (int i = 0; i < movesetData.mAbilities.size(); i++) {
-					ContentValues values = new ContentValues();
-					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
-					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_ABILITY);
-					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mAbilities.get(i).first);
-					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mAbilities.get(i).second);
-
-					db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
-				}
-
-				for (int i = 0; i < movesetData.mMoves.size(); i++) {
-					ContentValues values = new ContentValues();
-					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
-					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_MOVE);
-					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mMoves.get(i).first);
-					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mMoves.get(i).second);
-
-					db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
-				}
-
-				for (int i = 0; i < movesetData.mItems.size(); i++) {
-					ContentValues values = new ContentValues();
-					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
-					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_ITEM);
-					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mItems.get(i).first);
-					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mItems.get(i).second);
-
-					db.insertOrThrow(MovesetTable.TABLE_NAME, null, values);
-				}
-
-				for (int i = 0; i < movesetData.mCounters.size(); i++) {
-					ContentValues values = new ContentValues();
-					values.put(MovesetTable.COLUMN_NAME_ALIAS, data.mAlias);
-					values.put(MovesetTable.COLUMN_NAME_FORMAT, format);
-					values.put(MovesetTable.COLUMN_NAME_SECTION, MovesetTable.SECTION_COUNTER);
-					values.put(MovesetTable.COLUMN_NAME_NAME, movesetData.mCounters.get(i).first);
-					values.put(MovesetTable.COLUMN_NAME_USAGE, movesetData.mCounters.get(i).second);
-
-					db.insert(MovesetTable.TABLE_NAME, null, values);
-				}
-			}
-
-			db.setTransactionSuccessful();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			db.endTransaction();
+			db.close();
 		}
-		db.close();
 	}
 
 
 	public PokemonData get(String alias) {
-		SQLiteDatabase db = getReadableDatabase();
-
 		PokemonData data = new PokemonData(alias);
 
-		try {
-			Cursor pokemonCursor = db.query(
-					PokemonTable.TABLE_NAME,
-					new String[] {
-							PokemonTable.COLUMN_NAME_HP,
-							PokemonTable.COLUMN_NAME_ATK,
-							PokemonTable.COLUMN_NAME_DEF,
-							PokemonTable.COLUMN_NAME_SPA,
-							PokemonTable.COLUMN_NAME_SPD,
-							PokemonTable.COLUMN_NAME_SPE,
-					},
-					makeSelection(PokemonTable.COLUMN_NAME_ALIAS),
-					new String[] {alias},
-					null,
-					null,
-					null);
-			boolean exists = pokemonCursor.moveToFirst();
-			if (!exists) {
+		synchronized(this) {
+
+			SQLiteDatabase db = getReadableDatabase();
+
+			try {
+				Cursor pokemonCursor = db.query(
+						PokemonTable.TABLE_NAME,
+						new String[] {
+								PokemonTable.COLUMN_NAME_HP,
+								PokemonTable.COLUMN_NAME_ATK,
+								PokemonTable.COLUMN_NAME_DEF,
+								PokemonTable.COLUMN_NAME_SPA,
+								PokemonTable.COLUMN_NAME_SPD,
+								PokemonTable.COLUMN_NAME_SPE,
+						},
+						makeSelection(PokemonTable.COLUMN_NAME_ALIAS),
+						new String[] {alias},
+						null,
+						null,
+						null);
+				boolean exists = pokemonCursor.moveToFirst();
+				if (!exists) {
+					return null;
+				}
+				StatsData stats = new StatsData();
+				stats.mHP = pokemonCursor.getInt(0);
+				stats.mAtk = pokemonCursor.getInt(1);
+				stats.mDef = pokemonCursor.getInt(2);
+				stats.mSpA = pokemonCursor.getInt(3);
+				stats.mSpD = pokemonCursor.getInt(4);
+				stats.mSpe = pokemonCursor.getInt(5);
+				pokemonCursor.close();
+				data.mStatsData = stats;
+
+				Cursor usageCursor = db.query(
+						UsageTable.TABLE_NAME,
+						new String[] {
+								UsageTable.COLUMN_NAME_FORMAT,
+								UsageTable.COLUMN_NAME_USAGE
+						},
+						makeSelection(UsageTable.COLUMN_NAME_ALIAS),
+						new String[] {alias},
+						null,
+						null,
+						null);
+				usageCursor.moveToPosition(-1);
+				while (usageCursor.moveToNext()) {
+					data.mUsage[usageCursor.getInt(0)] = usageCursor.getString(1);
+				}
+				usageCursor.close();
+
+				Cursor movesetCursor = db.query(
+						MovesetTable.TABLE_NAME,
+						new String[] {
+								MovesetTable.COLUMN_NAME_FORMAT,
+								MovesetTable.COLUMN_NAME_SECTION,
+								MovesetTable.COLUMN_NAME_NAME,
+								MovesetTable.COLUMN_NAME_USAGE
+						},
+						makeSelection(MovesetTable.COLUMN_NAME_ALIAS),
+						new String[] {alias},
+						null,
+						null,
+						MovesetTable.COLUMN_NAME_SECTION); // TODO: may need to sort by usage; see PokemonData.MovesetData
+				movesetCursor.moveToPosition(-1);
+				while (movesetCursor.moveToNext()) {
+					int format = movesetCursor.getInt(0);
+					int section = movesetCursor.getInt(1);
+					String name = movesetCursor.getString(2);
+					String usage = movesetCursor.getString(3);
+
+					switch (section) {
+					case MovesetTable.SECTION_BUILD:
+						data.mMovesetData[format].addBuild(name, usage);
+						break;
+					case MovesetTable.SECTION_ABILITY:
+						data.mMovesetData[format].addAbility(name, usage);
+						break;
+					case MovesetTable.SECTION_MOVE:
+						data.mMovesetData[format].addMove(name, usage);
+						break;
+					case MovesetTable.SECTION_ITEM:
+						data.mMovesetData[format].addItem(name, usage);
+						break;
+					case MovesetTable.SECTION_COUNTER:
+						data.mMovesetData[format].addCounter(name, usage);
+					default:
+						break;
+					}
+				}
+
+			} catch (Exception e) {
+				// if anything goes wrong, just return null
 				return null;
 			}
-			StatsData stats = new StatsData();
-			stats.mHP = pokemonCursor.getInt(0);
-			stats.mAtk = pokemonCursor.getInt(1);
-			stats.mDef = pokemonCursor.getInt(2);
-			stats.mSpA = pokemonCursor.getInt(3);
-			stats.mSpD = pokemonCursor.getInt(4);
-			stats.mSpe = pokemonCursor.getInt(5);
-			pokemonCursor.close();
-			data.mStatsData = stats;
-
-			Cursor usageCursor = db.query(
-					UsageTable.TABLE_NAME,
-					new String[] {
-							UsageTable.COLUMN_NAME_FORMAT,
-							UsageTable.COLUMN_NAME_USAGE
-					},
-					makeSelection(UsageTable.COLUMN_NAME_ALIAS),
-					new String[] {alias},
-					null,
-					null,
-					null);
-			usageCursor.moveToPosition(-1);
-			while (usageCursor.moveToNext()) {
-				data.mUsage[usageCursor.getInt(0)] = usageCursor.getString(1);
-			}
-			usageCursor.close();
-
-			Cursor movesetCursor = db.query(
-					MovesetTable.TABLE_NAME,
-					new String[] {
-							MovesetTable.COLUMN_NAME_FORMAT,
-							MovesetTable.COLUMN_NAME_SECTION,
-							MovesetTable.COLUMN_NAME_NAME,
-							MovesetTable.COLUMN_NAME_USAGE
-					},
-					makeSelection(MovesetTable.COLUMN_NAME_ALIAS),
-					new String[] {alias},
-					null,
-					null,
-					MovesetTable.COLUMN_NAME_SECTION); // TODO: may need to sort by usage; see PokemonData.MovesetData
-			movesetCursor.moveToPosition(-1);
-			while (movesetCursor.moveToNext()) {
-				int format = movesetCursor.getInt(0);
-				int section = movesetCursor.getInt(1);
-				String name = movesetCursor.getString(2);
-				String usage = movesetCursor.getString(3);
-
-				switch (section) {
-				case MovesetTable.SECTION_BUILD:
-					data.mMovesetData[format].addBuild(name, usage);
-					break;
-				case MovesetTable.SECTION_ABILITY:
-					data.mMovesetData[format].addAbility(name, usage);
-					break;
-				case MovesetTable.SECTION_MOVE:
-					data.mMovesetData[format].addMove(name, usage);
-					break;
-				case MovesetTable.SECTION_ITEM:
-					data.mMovesetData[format].addItem(name, usage);
-					break;
-				case MovesetTable.SECTION_COUNTER:
-					data.mMovesetData[format].addCounter(name, usage);
-				default:
-					break;
-				}
-			}
-
-		} catch (Exception e) {
-			// if anything goes wrong, just return null
-			return null;
+			db.close();
 		}
-		db.close();
 
 		return data;
+	}
+
+
+	public void put(PokemonData data) {
+		// pass
+	}
+
+
+	public void delete(PokemonData data) {
+		// pass
 	}
 }

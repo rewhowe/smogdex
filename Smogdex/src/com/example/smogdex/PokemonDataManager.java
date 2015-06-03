@@ -7,12 +7,14 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.util.Log;
 
 import com.example.smogdex.SmogdexConstants.NetworkConstants;
+import com.example.smogdex.db.SmogdexDatabaseHelper;
 import com.example.smogdex.models.PokemonData;
 import com.example.smogdex.network.NetworkTask;
 import com.example.smogdex.network.NetworkTask.NetworkResponseHandler;
@@ -25,29 +27,35 @@ public class PokemonDataManager {
 		public void onReceive(PokemonData data);
 	}
 
-	private static HashMap<String, PokemonData> mDataMap;
+	private static HashMap<String, PokemonData> mDataMap = new HashMap<String, PokemonData>();
+
 	private static PokemonDataRequest mPendingRequest;
 	private static PokemonListItem mRequestedPokemon;
 	private static NetworkTask mNetworkTask;
 
-	public static void getPokemonData(final PokemonListItem selectedPokemon, final PokemonDataRequest request) {
+	public static synchronized void getPokemonData(final PokemonListItem selectedPokemon, final PokemonDataRequest request) {
 		mRequestedPokemon = selectedPokemon;
 		mPendingRequest = request;
 
-		// TODO: instead, just load the datamap from the db
-//		PokemonData[] data = SmogdexDatabaseHelper.get(alias);
-//		if (data != null) {
-//		    request.onReceive(data);
-//		}
-		// TODO: replace with above, after the db is implemented
-		if (mDataMap != null && mDataMap.containsKey(mRequestedPokemon.getAlias())) {
+		// attempt to load from data map
+		if (mDataMap.containsKey(mRequestedPokemon.getAlias())) {
 			Log.d(TAG, "receive from data map");
-			request.onReceive(mDataMap.get(mRequestedPokemon.getAlias()));
+			mPendingRequest.onReceive(mDataMap.get(mRequestedPokemon.getAlias()));
 			return;
 		}
 
+		// attempt to load from database
+		SmogdexDatabaseHelper helper = SmogdexDatabaseHelper.getInstance();
+		PokemonData data = helper.get(mRequestedPokemon.getAlias());
+		if (data != null) {
+			Log.d(TAG, "receive from database");
+			mDataMap.put(data.mAlias, data);
+			mPendingRequest.onReceive(data);
+			return;
+		}
+
+		// begin daisy-chain of network tasks to fetch from interwebs
 		if (mNetworkTask == null) {
-			mDataMap = new HashMap<String, PokemonData>();
 			fetchUsageData();
 		} else {
 			// TODO: is this scenario important?
@@ -79,7 +87,6 @@ public class PokemonDataManager {
 						if (m.find()) {
 							String name = m.group(1);
 							String usage = m.group(2);
-							Log.d(TAG, name + " " + usage);
 
 							if (!mDataMap.containsKey(name)) {
 								mDataMap.put(name, new PokemonData(name));
@@ -198,7 +205,7 @@ public class PokemonDataManager {
 			public void onSuccess() {
 				Log.d(TAG, "fetchMovesetData success");
 				mPendingRequest.onReceive(mDataMap.get(mRequestedPokemon.getAlias()));
-				// TODO: store datamap in db
+				saveDatamap();
 			}
 
 			@Override
@@ -208,5 +215,17 @@ public class PokemonDataManager {
 		});
 
 		mNetworkTask.execute(urls);
+	}
+
+	private static void saveDatamap() {
+		Log.d(TAG, "saving data map to database...");
+		SmogdexDatabaseHelper helper = SmogdexDatabaseHelper.getInstance();
+		// each call to post is one full transaction... it would be more efficient
+		// to do all of this as one transaction, however, since there are 700+
+		// pokemon to store, if something goes wrong, we'd like to have some of them at least
+		for (Entry<String, PokemonData> entry : mDataMap.entrySet()) {
+			helper.post(entry.getValue());
+		}
+		Log.d(TAG, "... finished");
 	}
 }
