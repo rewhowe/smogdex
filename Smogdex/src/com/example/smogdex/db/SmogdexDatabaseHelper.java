@@ -7,20 +7,20 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.smogdex.db.SmogdexContract.MovesetTable;
-import com.example.smogdex.db.SmogdexContract.PokemonTable;
-import com.example.smogdex.db.SmogdexContract.UsageTable;
+import com.example.smogdex.db.SmogdexDatabaseContract.MovesetTable;
+import com.example.smogdex.db.SmogdexDatabaseContract.PokemonTable;
+import com.example.smogdex.db.SmogdexDatabaseContract.UsageTable;
 import com.example.smogdex.models.PokemonData;
 import com.example.smogdex.models.PokemonData.Format;
 import com.example.smogdex.models.PokemonData.MovesetData;
 import com.example.smogdex.models.PokemonData.StatsData;
 
-public class SmogdexDBHelper extends SQLiteOpenHelper {
+public class SmogdexDatabaseHelper extends SQLiteOpenHelper {
 
 	public static final String DATABASE_NAME = "Smogdex.db";
 	public static final int DATABASE_VERSION = 2;
 
-	public SmogdexDBHelper(Context context) {
+	public SmogdexDatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
@@ -217,9 +217,9 @@ public class SmogdexDBHelper extends SQLiteOpenHelper {
 					},
 					makeSelection(MovesetTable.COLUMN_NAME_ALIAS),
 					new String[] {alias},
-					MovesetTable.COLUMN_NAME_SECTION,
 					null,
-					null); // TODO: may need to sort by usage; see PokemonData.MovesetData
+					null,
+					MovesetTable.COLUMN_NAME_SECTION); // TODO: may need to sort by usage; see PokemonData.MovesetData
 			movesetCursor.moveToPosition(-1);
 			while (movesetCursor.moveToNext()) {
 				int format = movesetCursor.getInt(0);

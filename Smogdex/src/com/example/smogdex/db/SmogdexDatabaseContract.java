@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
  * @author rewhowe
  *
  */
-public final class SmogdexContract {
+public final class SmogdexDatabaseContract {
 
 	public static final String CREATE_TABLE = "CREATE TABLE ";
 	public static final String DROP_TABLE = "DROP TABLE IF EXISTS ";
@@ -97,5 +97,5 @@ public final class SmogdexContract {
 				DROP_TABLE + TABLE_NAME;
 	}
 
-	private SmogdexContract() {}
+	private SmogdexDatabaseContract() {}
 }
