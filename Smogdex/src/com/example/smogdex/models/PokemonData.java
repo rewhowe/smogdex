@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.util.Pair;
 
+import com.google.gson.annotations.SerializedName;
+
 public class PokemonData /*extends Serializable*/ {
 
 	public static abstract class Format {
@@ -15,13 +17,24 @@ public class PokemonData /*extends Serializable*/ {
 	}
 
 	public static class StatsData {
-		// TODO: convert to gson model
-		public Integer mHP = 0;
-		public Integer mAtk = 0;
-		public Integer mDef = 0;
-		public Integer mSpA = 0;
-		public Integer mSpD = 0;
-		public Integer mSpe = 0;
+
+		@SerializedName("hp")
+		public Integer mHP;
+
+		@SerializedName("attack")
+		public Integer mAtk;
+
+		@SerializedName("defense")
+		public Integer mDef;
+
+		@SerializedName("sp_atk")
+		public Integer mSpA;
+
+		@SerializedName("sp_def")
+		public Integer mSpD;
+
+		@SerializedName("speed")
+		public Integer mSpe;
 	}
 
 	/*

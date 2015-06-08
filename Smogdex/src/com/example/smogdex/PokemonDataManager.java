@@ -16,8 +16,10 @@ import android.util.Log;
 import com.example.smogdex.SmogdexConstants.NetworkConstants;
 import com.example.smogdex.db.SmogdexDatabaseHelper;
 import com.example.smogdex.models.PokemonData;
+import com.example.smogdex.models.PokemonData.StatsData;
 import com.example.smogdex.network.NetworkTask;
 import com.example.smogdex.network.NetworkTask.NetworkResponseHandler;
+import com.google.gson.Gson;
 
 public class PokemonDataManager {
 
@@ -27,7 +29,7 @@ public class PokemonDataManager {
 		public void onReceive(PokemonData data);
 	}
 
-	private static HashMap<String, PokemonData> mDataMap = new HashMap<String, PokemonData>();
+	private static HashMap<String, PokemonData> mDataCache = new HashMap<String, PokemonData>();
 
 	private static PokemonDataRequest mPendingRequest;
 	private static PokemonListItem mRequestedPokemon;
@@ -38,9 +40,9 @@ public class PokemonDataManager {
 		mPendingRequest = request;
 
 		// attempt to load from data map
-		if (mDataMap.containsKey(mRequestedPokemon.getAlias())) {
+		if (mDataCache.containsKey(mRequestedPokemon.getAlias())) {
 			Log.d(TAG, "receive from data map");
-			mPendingRequest.onReceive(mDataMap.get(mRequestedPokemon.getAlias()));
+			mPendingRequest.onReceive(mDataCache.get(mRequestedPokemon.getAlias()));
 			return;
 		}
 
@@ -49,26 +51,83 @@ public class PokemonDataManager {
 		PokemonData data = helper.get(mRequestedPokemon.getAlias());
 		if (data != null) {
 			Log.d(TAG, "receive from database");
-			mDataMap.put(data.mAlias, data);
+			mDataCache.put(data.mAlias, data);
 			mPendingRequest.onReceive(data);
 			return;
 		}
 
 		// begin daisy-chain of network tasks to fetch from interwebs
 		if (mNetworkTask == null) {
-			fetchUsageData();
+			fetchStatsData();
 		} else {
 			// TODO: is this scenario important?
 		}
+	}
+
+	private static void fetchStatsData() {
+		URL [] urls = null;
+		try {
+			urls = new URL[]{
+					new URL(NetworkConstants.POKEAPI_URL_BASE + mRequestedPokemon.mNumber)
+			};
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+
+		mNetworkTask = new NetworkTask(new NetworkResponseHandler() {
+			@Override
+			public void onReceive(int which, InputStream is) {
+				Log.d(TAG, "fetchStatsData onReceive");
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+				StringBuilder builder = new StringBuilder();
+				String line;
+				try {
+					while ((line = reader.readLine()) != null) {
+						builder.append(line);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				Gson gson = new Gson();
+				StatsData stats = gson.fromJson(builder.toString(), StatsData.class);
+
+				if (!mDataCache.containsKey(mRequestedPokemon.getAlias())) {
+					mDataCache.put(mRequestedPokemon.getAlias(), new PokemonData(mRequestedPokemon.getAlias()));
+				}
+				mDataCache.get(mRequestedPokemon.getAlias()).mStatsData = stats;
+			}
+
+			@Override
+			public void onError(int which) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onSuccess() {
+				fetchUsageData();
+			}
+
+			@Override
+			public void onFailure(int numErrors) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+
+		mNetworkTask.execute(urls);
+
 	}
 
 	private static void fetchUsageData() {
 		URL[] urls = null;
 		try {
 			urls = new URL[]{
-					new URL(NetworkConstants.URL_BASE + NetworkConstants.OU + NetworkConstants.USAGE),
-					new URL(NetworkConstants.URL_BASE + NetworkConstants.UU + NetworkConstants.USAGE),
-					new URL(NetworkConstants.URL_BASE + NetworkConstants.LC + NetworkConstants.USAGE)
+					new URL(NetworkConstants.SMOGON_URL_BASE + NetworkConstants.OU + NetworkConstants.USAGE),
+					new URL(NetworkConstants.SMOGON_URL_BASE + NetworkConstants.UU + NetworkConstants.USAGE),
+					new URL(NetworkConstants.SMOGON_URL_BASE + NetworkConstants.LC + NetworkConstants.USAGE)
 			};
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -88,10 +147,10 @@ public class PokemonDataManager {
 							String name = m.group(1);
 							String usage = m.group(2);
 
-							if (!mDataMap.containsKey(name)) {
-								mDataMap.put(name, new PokemonData(name));
+							if (!mDataCache.containsKey(name)) {
+								mDataCache.put(name, new PokemonData(name));
 							}
-							mDataMap.get(name).mUsage[which] = usage;
+							mDataCache.get(name).mUsage[which] = usage;
 						}
 					}
 				} catch (IOException e) {
@@ -123,9 +182,9 @@ public class PokemonDataManager {
 		URL[] urls = null;
 		try {
 			urls = new URL[]{
-					new URL(NetworkConstants.URL_BASE + NetworkConstants.OU + NetworkConstants.MOVESET),
-					new URL(NetworkConstants.URL_BASE + NetworkConstants.UU + NetworkConstants.MOVESET),
-					new URL(NetworkConstants.URL_BASE + NetworkConstants.LC + NetworkConstants.MOVESET)
+					new URL(NetworkConstants.SMOGON_URL_BASE + NetworkConstants.OU + NetworkConstants.MOVESET),
+					new URL(NetworkConstants.SMOGON_URL_BASE + NetworkConstants.UU + NetworkConstants.MOVESET),
+					new URL(NetworkConstants.SMOGON_URL_BASE + NetworkConstants.LC + NetworkConstants.MOVESET)
 			};
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -149,8 +208,8 @@ public class PokemonDataManager {
 						Matcher m = pAlias.matcher(line);
 						if (m.find()) {
 							String name = m.group(1);
-							if (!mDataMap.containsKey(name)) {
-								mDataMap.put(name, new PokemonData(name));
+							if (!mDataCache.containsKey(name)) {
+								mDataCache.put(name, new PokemonData(name));
 							}
 
 							while (true) {
@@ -167,15 +226,15 @@ public class PokemonDataManager {
 											String val = m.group(2);
 
 											if (attr.equals("abilities")) {
-												mDataMap.get(name).mMovesetData[which].addAbility(key, val);
+												mDataCache.get(name).mMovesetData[which].addAbility(key, val);
 											} else if (attr.equals("items")) {
-												mDataMap.get(name).mMovesetData[which].addItem(key, val);
+												mDataCache.get(name).mMovesetData[which].addItem(key, val);
 											} else if (attr.equals("spreads")) {
-												mDataMap.get(name).mMovesetData[which].addBuild(key, val);
+												mDataCache.get(name).mMovesetData[which].addBuild(key, val);
 											} else if (attr.equals("moves")) {
-												mDataMap.get(name).mMovesetData[which].addMove(key, val);
+												mDataCache.get(name).mMovesetData[which].addMove(key, val);
 											} else if (attr.equals("checks")) {
-												mDataMap.get(name).mMovesetData[which].addCounter(key, val);
+												mDataCache.get(name).mMovesetData[which].addCounter(key, val);
 											} else {
 												// skip
 											}
@@ -204,7 +263,7 @@ public class PokemonDataManager {
 			@Override
 			public void onSuccess() {
 				Log.d(TAG, "fetchMovesetData success");
-				mPendingRequest.onReceive(mDataMap.get(mRequestedPokemon.getAlias()));
+				mPendingRequest.onReceive(mDataCache.get(mRequestedPokemon.getAlias()));
 				saveDatamap();
 			}
 
@@ -223,7 +282,7 @@ public class PokemonDataManager {
 		// each call to post is one full transaction... it would be more efficient
 		// to do all of this as one transaction, however, since there are 700+
 		// pokemon to store, if something goes wrong, we'd like to have some of them at least
-		for (Entry<String, PokemonData> entry : mDataMap.entrySet()) {
+		for (Entry<String, PokemonData> entry : mDataCache.entrySet()) {
 			helper.post(entry.getValue());
 		}
 		Log.d(TAG, "... finished");
