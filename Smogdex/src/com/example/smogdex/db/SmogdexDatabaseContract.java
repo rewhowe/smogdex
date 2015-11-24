@@ -28,6 +28,7 @@ public final class SmogdexDatabaseContract {
 	public static abstract class PokemonTable implements BaseColumns {
 		public static final String TABLE_NAME = "Pokemon";
 		public static final String COLUMN_NAME_ALIAS = "alias";
+		public static final String COLUMN_NAME_INIT = "init";
 		public static final String COLUMN_NAME_HP = "hp";
 		public static final String COLUMN_NAME_ATK = "atk";
 		public static final String COLUMN_NAME_DEF = "def";
@@ -38,6 +39,7 @@ public final class SmogdexDatabaseContract {
 		public static final String CREATE =
 				CREATE_TABLE + TABLE_NAME + BRACKET_OPEN
 				+ COLUMN_NAME_ALIAS + DATA_TYPE_TEXT + PRIMARY_KEY + NOT_NULL + COMMA_SEP
+				+ COLUMN_NAME_INIT + DATA_TYPE_INT + NOT_NULL + COMMA_SEP
 				+ COLUMN_NAME_HP  + DATA_TYPE_INT + NOT_NULL + COMMA_SEP
 				+ COLUMN_NAME_ATK + DATA_TYPE_INT + NOT_NULL + COMMA_SEP
 				+ COLUMN_NAME_DEF + DATA_TYPE_INT + NOT_NULL + COMMA_SEP

@@ -42,6 +42,8 @@ public class InfoActivity extends Activity {
 		PokemonDataManager.getPokemonData(mSelectedPokemon, new PokemonDataRequest() {
 			@Override
 			public void onReceive(final PokemonData data) {
+				Log.d(TAG, "received data from data manager - " + data.mUsage[Format.OU]);
+
 				InfoActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {

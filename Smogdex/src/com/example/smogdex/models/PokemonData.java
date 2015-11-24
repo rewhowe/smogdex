@@ -19,22 +19,22 @@ public class PokemonData /*extends Serializable*/ {
 	public static class StatsData {
 
 		@SerializedName("hp")
-		public Integer mHP;
+		public Integer mHP = 0;
 
 		@SerializedName("attack")
-		public Integer mAtk;
+		public Integer mAtk = 0;
 
 		@SerializedName("defense")
-		public Integer mDef;
+		public Integer mDef = 0;
 
 		@SerializedName("sp_atk")
-		public Integer mSpA;
+		public Integer mSpA = 0;
 
 		@SerializedName("sp_def")
-		public Integer mSpD;
+		public Integer mSpD = 0;
 
 		@SerializedName("speed")
-		public Integer mSpe;
+		public Integer mSpe = 0;
 	}
 
 	/*
@@ -83,11 +83,13 @@ public class PokemonData /*extends Serializable*/ {
 	public final String mUsage[];
 	public final MovesetData mMovesetData[];
 	public StatsData mStatsData;
+	public boolean mStatsDataRetrieved;
 
 	public PokemonData(String alias) {
 		mAlias = alias;
 		mUsage = new String[Format.NUM_FORMATS];
 		mStatsData = new StatsData();
+		mStatsDataRetrieved = false;
 		mMovesetData = new MovesetData[] {
 				new MovesetData(),
 				new MovesetData(),

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.smogdex.db.SmogdexDatabaseContract.MovesetTable;
 import com.example.smogdex.db.SmogdexDatabaseContract.PokemonTable;
@@ -17,10 +18,12 @@ import com.example.smogdex.models.PokemonData.StatsData;
 
 public class SmogdexDatabaseHelper extends SQLiteOpenHelper {
 
-	public static final String DATABASE_NAME = "Smogdex.db";
-	public static final int DATABASE_VERSION = 2;
+	private static final String TAG = SmogdexDatabaseHelper.class.getSimpleName();
 
-	public static SmogdexDatabaseHelper mInstance;
+	public static final String DATABASE_NAME = "Smogdex.db";
+	public static final int DATABASE_VERSION = 4;
+
+	private static SmogdexDatabaseHelper mInstance;
 
 	public static void initialize(Context context) {
 		mInstance = new SmogdexDatabaseHelper(context);
@@ -77,6 +80,7 @@ public class SmogdexDatabaseHelper extends SQLiteOpenHelper {
 				// PokemonTable
 				ContentValues pokemonValues = new ContentValues();
 				pokemonValues.put(PokemonTable.COLUMN_NAME_ALIAS, data.mAlias);
+				pokemonValues.put(PokemonTable.COLUMN_NAME_INIT, data.mStatsDataRetrieved ? 1 : 0);
 				pokemonValues.put(PokemonTable.COLUMN_NAME_HP, data.mStatsData.mHP);
 				pokemonValues.put(PokemonTable.COLUMN_NAME_ATK, data.mStatsData.mAtk);
 				pokemonValues.put(PokemonTable.COLUMN_NAME_DEF, data.mStatsData.mDef);
@@ -181,6 +185,7 @@ public class SmogdexDatabaseHelper extends SQLiteOpenHelper {
 				Cursor pokemonCursor = db.query(
 						PokemonTable.TABLE_NAME,
 						new String[] {
+								PokemonTable.COLUMN_NAME_INIT,
 								PokemonTable.COLUMN_NAME_HP,
 								PokemonTable.COLUMN_NAME_ATK,
 								PokemonTable.COLUMN_NAME_DEF,
@@ -198,12 +203,13 @@ public class SmogdexDatabaseHelper extends SQLiteOpenHelper {
 					return null;
 				}
 				StatsData stats = new StatsData();
-				stats.mHP = pokemonCursor.getInt(0);
-				stats.mAtk = pokemonCursor.getInt(1);
-				stats.mDef = pokemonCursor.getInt(2);
-				stats.mSpA = pokemonCursor.getInt(3);
-				stats.mSpD = pokemonCursor.getInt(4);
-				stats.mSpe = pokemonCursor.getInt(5);
+				data.mStatsDataRetrieved = (pokemonCursor.getInt(0) == 1);
+				stats.mHP = pokemonCursor.getInt(1);
+				stats.mAtk = pokemonCursor.getInt(2);
+				stats.mDef = pokemonCursor.getInt(3);
+				stats.mSpA = pokemonCursor.getInt(4);
+				stats.mSpD = pokemonCursor.getInt(5);
+				stats.mSpe = pokemonCursor.getInt(6);
 				pokemonCursor.close();
 				data.mStatsData = stats;
 
@@ -276,7 +282,39 @@ public class SmogdexDatabaseHelper extends SQLiteOpenHelper {
 
 
 	public void put(PokemonData data) {
-		// pass
+		if (!data.mStatsDataRetrieved) {
+			Log.d(TAG, "something has gone horribly wrong");
+			return;
+		}
+
+		SQLiteDatabase db = getWritableDatabase();
+
+		try {
+			// TODO: this should theoretically update everything, but for now
+			// we only need to update stats
+			db.beginTransaction();
+
+			// PokemonTable
+			ContentValues pokemonValues = new ContentValues();
+			pokemonValues.put(PokemonTable.COLUMN_NAME_ALIAS, data.mAlias);
+			pokemonValues.put(PokemonTable.COLUMN_NAME_INIT, 1);
+			pokemonValues.put(PokemonTable.COLUMN_NAME_HP, data.mStatsData.mHP);
+			pokemonValues.put(PokemonTable.COLUMN_NAME_ATK, data.mStatsData.mAtk);
+			pokemonValues.put(PokemonTable.COLUMN_NAME_DEF, data.mStatsData.mDef);
+			pokemonValues.put(PokemonTable.COLUMN_NAME_SPA, data.mStatsData.mSpA);
+			pokemonValues.put(PokemonTable.COLUMN_NAME_SPD, data.mStatsData.mSpD);
+			pokemonValues.put(PokemonTable.COLUMN_NAME_SPE, data.mStatsData.mSpe);
+
+			db.replace(PokemonTable.TABLE_NAME, null, pokemonValues);
+
+			db.setTransactionSuccessful();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			db.endTransaction();
+		}
+		db.close();
 	}
 
 
