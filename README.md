@@ -1,2 +1,2 @@
 # smogdex
-Practice app with Ui for a smogon-api-based pokedex
+Practice app with Ui-chan for a smogon-api-based pokedex
